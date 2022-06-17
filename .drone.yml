@@ -55,8 +55,7 @@ steps:
       tags:
         - git-${DRONE_COMMIT_SHA:0:7}
         - latest
-      registry:
-        from_secret: ecr_registry
+      registry: public.ecr.aws/kanopy
       access_key:
         from_secret: ecr_access_key
       secret_key:
@@ -81,8 +80,7 @@ steps:
       tags:
         - git-${DRONE_COMMIT_SHA:0:7}
         - ${DRONE_TAG}
-      registry:
-        from_secret: ecr_registry
+      registry: public.ecr.aws/kanopy
       access_key:
         from_secret: ecr_access_key
       secret_key:
