@@ -31,7 +31,7 @@ func NewRootCommand() *cobra.Command {
 func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error {
 	// bind flags to viper
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	viper.SetEnvPrefix("app")
+	viper.SetEnvPrefix("DRONE")
 	viper.AutomaticEnv()
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
