@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/kanopy-platform/go-http-middleware/logging"
 )
 
 type Server struct {
@@ -12,11 +14,12 @@ type Server struct {
 
 func New() http.Handler {
 	s := &Server{router: http.NewServeMux()}
+	logrusMiddleware := logging.NewLogrus()
 
 	s.router.HandleFunc("/", s.handleRoot())
 	s.router.HandleFunc("/healthz", s.handleHealthz())
 
-	return s.router
+	return logrusMiddleware.Middleware(s.router)
 }
 
 func (s *Server) handleRoot() http.HandlerFunc {
