@@ -1,0 +1,91 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+trigger:
+  branch: [main]
+
+workspace:
+  path: /go/src/github.com/${DRONE_REPO}
+
+volumes:
+  - name: cache
+    temp: {}
+
+steps:
+  - name: test
+    image: golangci/golangci-lint:v1.42.1
+    volumes:
+      - name: cache
+        path: /go
+    commands:
+      - make test
+
+  - name: license-check
+    image: public.ecr.aws/kanopy/licensed-go:3.4.4
+    commands:
+      - licensed cache
+      - licensed status
+
+  - name: build
+    image: plugins/kaniko-ecr
+    pull: always
+    volumes:
+      - name: cache
+        path: /go
+    settings:
+      no_push: true
+    when:
+      event: [pull_request]
+
+  - name: publish
+    image: plugins/kaniko-ecr
+    pull: always
+    environment:
+      GIT_COMMIT: ${DRONE_COMMIT_SHA:0:7}
+    volumes:
+      - name: cache
+        path: /go
+    settings:
+      create_repository: true
+      repo: ${DRONE_REPO_NAME}
+      build_args:
+        - GIT_COMMIT
+      tags:
+        - git-${DRONE_COMMIT_SHA:0:7}
+        - latest
+      registry:
+        from_secret: ecr_registry
+      access_key:
+        from_secret: ecr_access_key
+      secret_key:
+        from_secret: ecr_secret_key
+    when:
+      event: [push]
+
+  - name: publish-tag
+    image: plugins/kaniko-ecr
+    pull: always
+    environment:
+      VERSION: ${DRONE_TAG}
+      GIT_COMMIT: ${DRONE_COMMIT_SHA:0:7}
+    volumes:
+      - name: cache
+        path: /go
+    settings:
+      repo: ${DRONE_REPO_NAME}
+      build_args:
+        - VERSION
+        - GIT_COMMIT
+      tags:
+        - git-${DRONE_COMMIT_SHA:0:7}
+        - ${DRONE_TAG}
+      registry:
+        from_secret: ecr_registry
+      access_key:
+        from_secret: ecr_access_key
+      secret_key:
+        from_secret: ecr_secret_key
+    when:
+      event: [tag]
