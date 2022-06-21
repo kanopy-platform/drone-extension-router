@@ -19,6 +19,14 @@ func WithConvertPlugins(plugins ...converter.Plugin) RouterOption {
 	}
 }
 
+func NewDefaultRouter() *Router {
+	return NewRouter(
+		WithConvertPlugins(
+			NewAddNewline(),
+		),
+	)
+}
+
 func NewRouter(opts ...RouterOption) *Router {
 	router := &Router{}
 

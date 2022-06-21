@@ -28,13 +28,9 @@ func WithPluginRouter(router *plugin.Router) func(*Server) {
 
 func New(secret string, opts ...ServerOptFunc) http.Handler {
 	s := &Server{
-		router: http.NewServeMux(),
-		secret: secret,
-		pluginRouter: plugin.NewRouter(
-			plugin.WithConvertPlugins(
-				plugin.NewAddNewline(),
-			),
-		),
+		router:       http.NewServeMux(),
+		secret:       secret,
+		pluginRouter: plugin.NewDefaultRouter(),
 	}
 
 	for _, opt := range opts {
