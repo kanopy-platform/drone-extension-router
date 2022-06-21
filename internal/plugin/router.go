@@ -19,14 +19,6 @@ func WithConvertPlugins(plugins ...converter.Plugin) RouterOption {
 	}
 }
 
-func NewDefaultRouter() *Router {
-	return NewRouter(
-		WithConvertPlugins(
-			NewAddNewline(),
-		),
-	)
-}
-
 func NewRouter(opts ...RouterOption) *Router {
 	router := &Router{}
 
@@ -37,16 +29,15 @@ func NewRouter(opts ...RouterOption) *Router {
 	return router
 }
 
-func (r *Router) Convert(ctx context.Context, req *converter.Request) (conf *drone.Config, err error) {
+func (r *Router) Convert(ctx context.Context, req *converter.Request) (*drone.Config, error) {
 	for _, plugin := range r.convertPlugins {
-		conf, err = plugin.Convert(ctx, req)
+		out, err := plugin.Convert(ctx, req)
 		if err != nil {
 			return nil, err
 		}
 
-		// modify the request object before it gets passed to the next plugin
-		req.Config = *conf
+		req.Config = *out
 	}
 
-	return
+	return &req.Config, nil
 }
