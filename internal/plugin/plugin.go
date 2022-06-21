@@ -2,40 +2,43 @@ package plugin
 
 import (
 	"context"
-	"strings"
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/converter"
 )
 
-// TODO: addNewline is a mock plugin that should be removed once a real plugin in implemented
-type addNewline struct{}
-
-func NewAddNewline() converter.Plugin {
-	return &addNewline{}
+type Router struct {
+	convertPlugins []converter.Plugin
 }
 
-func (p *addNewline) Convert(ctx context.Context, req *converter.Request) (*drone.Config, error) {
-	// TODO this should be modified or removed. For
-	// demonstration purposes we show how you can ignore
-	// certain configuration files by file extension.
-	if strings.HasSuffix(req.Repo.Config, ".xyz") {
-		// a nil response instructs the Drone server to
-		// use the configuration file as-is, without
-		// modification.
-		return nil, nil
+type RouterOption func(*Router)
+
+func WithConvertPlugins(plugins ...converter.Plugin) RouterOption {
+	return func(r *Router) {
+		r.convertPlugins = append(r.convertPlugins, plugins...)
+	}
+}
+
+func NewRouter(opts ...RouterOption) *Router {
+	router := &Router{}
+
+	for _, opt := range opts {
+		opt(router)
 	}
 
-	// get the configuration file from the request.
-	config := req.Config.Data
+	return router
+}
 
-	// TODO this should be modified or removed. For
-	// demonstration purposes we make a simple modification
-	// to the configuration file and add a newline.
-	config = config + "\n"
+func (r *Router) Convert(ctx context.Context, req *converter.Request) (conf *drone.Config, err error) {
+	for _, plugin := range r.convertPlugins {
+		conf, err = plugin.Convert(ctx, req)
+		if err != nil {
+			return nil, err
+		}
 
-	// returns the modified configuration file.
-	return &drone.Config{
-		Data: config,
-	}, nil
+		// modify the request object before it gets passed to the next plugin
+		req.Config = *conf
+	}
+
+	return
 }

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/99designs/httpsignatures-go"
+	"github.com/drone/drone-go/plugin/converter"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -47,6 +48,7 @@ func TestHandleHealthz(t *testing.T) {
 
 // https://github.com/drone/drone-go/blob/v1.7.1/plugin/converter/handler_test.go#L31
 func newSignedRequest(t *testing.T, req *http.Request) *http.Request {
+	req.Header.Add("Accept", converter.V1)
 	req.Header.Add("Date", time.Now().UTC().Format(http.TimeFormat))
 	assert.NoError(t, httpsignatures.DefaultSha256Signer.AuthRequest("hmac-key", "thisisnotsafe", req))
 	return req

@@ -12,18 +12,33 @@ import (
 )
 
 type Server struct {
-	router  *http.ServeMux
-	secret  string
-	plugins []converter.Plugin
+	router       *http.ServeMux
+	secret       string
+	pluginRouter *plugin.Router
 }
 
-func New(secret string) http.Handler {
+// options
+type ServerOptFunc func(*Server)
+
+func WithPluginRouter(router *plugin.Router) func(*Server) {
+	return func(s *Server) {
+		s.pluginRouter = router
+	}
+}
+
+func New(secret string, opts ...ServerOptFunc) http.Handler {
 	s := &Server{
 		router: http.NewServeMux(),
 		secret: secret,
-		plugins: []converter.Plugin{
-			plugin.NewAddNewline(),
-		},
+		pluginRouter: plugin.NewRouter(
+			plugin.WithConvertPlugins(
+				plugin.NewAddNewline(),
+			),
+		),
+	}
+
+	for _, opt := range opts {
+		opt(s)
 	}
 
 	logrusMiddleware := logging.NewLogrus()
@@ -34,18 +49,14 @@ func New(secret string) http.Handler {
 	return logrusMiddleware.Middleware(s.router)
 }
 
-// handlePlugins executes the server plugin handlers in order
 func (s *Server) handlePlugins() http.HandlerFunc {
 	logger := log.StandardLogger()
-	handlers := []http.Handler{}
-
-	for _, plugin := range s.plugins {
-		handlers = append(handlers, converter.Handler(plugin, s.secret, logger))
-	}
+	convertHandler := converter.Handler(s.pluginRouter, s.secret, logger)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		for _, handler := range handlers {
-			handler.ServeHTTP(w, r)
+		switch r.Header.Get("Accept") {
+		case converter.V1:
+			convertHandler.ServeHTTP(w, r)
 		}
 	}
 }
