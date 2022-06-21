@@ -12,31 +12,35 @@ import (
 )
 
 type Server struct {
-	router *http.ServeMux
+	router  *http.ServeMux
+	secret  string
+	plugins []converter.Plugin
 }
 
 func New(secret string) http.Handler {
-	s := &Server{router: http.NewServeMux()}
-	logrusMiddleware := logging.NewLogrus()
-
-	plugins := []converter.Plugin{
-		plugin.New(),
+	s := &Server{
+		router: http.NewServeMux(),
+		secret: secret,
+		plugins: []converter.Plugin{
+			plugin.NewAddNewline(),
+		},
 	}
 
-	s.router.Handle("/", s.handlePlugins(secret, plugins...))
+	logrusMiddleware := logging.NewLogrus()
+
+	s.router.HandleFunc("/", s.handlePlugins())
 	s.router.HandleFunc("/healthz", s.handleHealthz())
 
 	return logrusMiddleware.Middleware(s.router)
 }
 
-// handlePlugins accepts multiple conversion plugins and executes
-// their handlers in the passed in order
-func (s *Server) handlePlugins(secret string, plugins ...converter.Plugin) http.HandlerFunc {
+// handlePlugins executes the server plugin handlers in order
+func (s *Server) handlePlugins() http.HandlerFunc {
 	logger := log.StandardLogger()
 	handlers := []http.Handler{}
 
-	for _, plugin := range plugins {
-		handlers = append(handlers, converter.Handler(plugin, secret, logger))
+	for _, plugin := range s.plugins {
+		handlers = append(handlers, converter.Handler(plugin, s.secret, logger))
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -8,13 +8,14 @@ import (
 	"github.com/drone/drone-go/plugin/converter"
 )
 
-type plugin struct{}
+// TODO: addNewline is a mock plugin that should be removed once a real plugin in implemented
+type addNewline struct{}
 
-func New() converter.Plugin {
-	return &plugin{}
+func NewAddNewline() converter.Plugin {
+	return &addNewline{}
 }
 
-func (p *plugin) Convert(ctx context.Context, req *converter.Request) (*drone.Config, error) {
+func (p *addNewline) Convert(ctx context.Context, req *converter.Request) (*drone.Config, error) {
 	// TODO this should be modified or removed. For
 	// demonstration purposes we show how you can ignore
 	// certain configuration files by file extension.
