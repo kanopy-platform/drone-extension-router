@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -23,6 +24,7 @@ func NewRootCommand() *cobra.Command {
 
 	cmd.PersistentFlags().String("log-level", "info", "Configure log level")
 	cmd.PersistentFlags().String("listen-address", ":8080", "Server listen address")
+	cmd.PersistentFlags().String("secret", "", "Token used to authenticate http requests to the extension")
 
 	cmd.AddCommand(newVersionCommand())
 	return cmd
@@ -36,6 +38,11 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return err
+	}
+
+	// check required flags
+	if viper.GetString("secret") == "" {
+		return fmt.Errorf("--secret flag is required")
 	}
 
 	// set log level
