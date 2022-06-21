@@ -13,5 +13,5 @@ make test
 
 Run local docker container
 ```
-make docker-run FLAGS="--secret thisisnotsafe"
+make docker-run
 ```
