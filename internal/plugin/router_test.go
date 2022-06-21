@@ -15,7 +15,16 @@ func (p *newline) Convert(ctx context.Context, req *converter.Request) (*drone.C
 	return &drone.Config{Data: req.Config.Data + "\n"}, nil
 }
 
-func TestRouter(t *testing.T) {
+func TestDefaultRouter(t *testing.T) {
+	t.Parallel()
+
+	r := NewRouter()
+
+	req := &converter.Request{Config: drone.Config{Data: "name: default"}}
+	assertConvert(t, r, "name: default", req)
+}
+
+func TestMultiRouter(t *testing.T) {
 	t.Parallel()
 
 	r := NewRouter(
@@ -24,7 +33,13 @@ func TestRouter(t *testing.T) {
 			&newline{},
 		),
 	)
-	conf, err := r.Convert(context.Background(), &converter.Request{})
+
+	req := &converter.Request{Config: drone.Config{Data: "name: default"}}
+	assertConvert(t, r, "name: default\n\n", req)
+}
+
+func assertConvert(t *testing.T, r *Router, want string, req *converter.Request) {
+	conf, err := r.Convert(context.Background(), req)
 	assert.NoError(t, err)
-	assert.Equal(t, "\n\n", conf.Data)
+	assert.Equal(t, want, conf.Data)
 }
