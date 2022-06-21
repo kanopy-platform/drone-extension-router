@@ -4,7 +4,9 @@ type: kubernetes
 name: default
 
 trigger:
-  branch: [main, pathschanged_plugin_publish]
+  branch:
+    - main
+    - pathschanged_plugin_publish
 
 workspace:
   path: /go/src/github.com/${DRONE_REPO}
