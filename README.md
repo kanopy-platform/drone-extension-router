@@ -1,8 +1,8 @@
-# drone-convert
+# drone-extension-router
 
 WIP...
 
-Conversion extension for Drone that supports various pipieline mutations.
+Drone extension server that is capable of routing different kinds of [extension requests](https://docs.drone.io/extensions/overview/) from the Drone server.
 
 ## Testing
 
