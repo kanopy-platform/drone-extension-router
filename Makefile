@@ -28,7 +28,7 @@ docker:
 
 .PHONY: docker-run
 docker-run: docker ## Build and run the application in a local docker container
-	@docker run -p ${DEFAULT_APP_PORT}:${DEFAULT_APP_PORT} $(CMD_NAME):latest --secret thisisnotsafe
+	@docker run -p ${DEFAULT_APP_PORT}:${DEFAULT_APP_PORT} $(CMD_NAME):latest ${FLAGS}
 
 .PHONY: help
 help:

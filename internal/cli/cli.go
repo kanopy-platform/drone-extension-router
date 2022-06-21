@@ -40,11 +40,6 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 		return err
 	}
 
-	// check required flags
-	if viper.GetString("secret") == "" {
-		return fmt.Errorf("--secret flag is required")
-	}
-
 	// set log level
 	logLevel, err := log.ParseLevel(viper.GetString("log-level"))
 	if err != nil {
@@ -58,8 +53,13 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 
 func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 	addr := viper.GetString("listen-address")
+	secret := viper.GetString("secret")
+
+	if secret == "" {
+		return fmt.Errorf("--secret flag is required")
+	}
 
 	log.Printf("Starting server on %s\n", addr)
 
-	return http.ListenAndServe(addr, server.New())
+	return http.ListenAndServe(addr, server.New(secret))
 }

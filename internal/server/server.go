@@ -5,18 +5,22 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/drone/drone-go/plugin/converter"
+	"github.com/kanopy-platform/drone-convert/internal/plugin"
 	"github.com/kanopy-platform/go-http-middleware/logging"
+	log "github.com/sirupsen/logrus"
 )
 
 type Server struct {
 	router *http.ServeMux
 }
 
-func New() http.Handler {
+func New(secret string) http.Handler {
 	s := &Server{router: http.NewServeMux()}
 	logrusMiddleware := logging.NewLogrus()
+	converterHandler := converter.Handler(plugin.New(), secret, log.StandardLogger())
 
-	s.router.HandleFunc("/", s.handleRoot())
+	s.router.Handle("/", converterHandler)
 	s.router.HandleFunc("/healthz", s.handleHealthz())
 
 	return logrusMiddleware.Middleware(s.router)
