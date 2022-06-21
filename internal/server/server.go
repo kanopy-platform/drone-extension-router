@@ -18,17 +18,31 @@ type Server struct {
 func New(secret string) http.Handler {
 	s := &Server{router: http.NewServeMux()}
 	logrusMiddleware := logging.NewLogrus()
-	converterHandler := converter.Handler(plugin.New(), secret, log.StandardLogger())
 
-	s.router.Handle("/", converterHandler)
+	plugins := []converter.Plugin{
+		plugin.New(),
+	}
+
+	s.router.Handle("/", s.handlePlugins(secret, plugins...))
 	s.router.HandleFunc("/healthz", s.handleHealthz())
 
 	return logrusMiddleware.Middleware(s.router)
 }
 
-func (s *Server) handleRoot() http.HandlerFunc {
+// handlePlugins accepts multiple conversion plugins and executes
+// their handlers in the passed in order
+func (s *Server) handlePlugins(secret string, plugins ...converter.Plugin) http.HandlerFunc {
+	logger := log.StandardLogger()
+	handlers := []http.Handler{}
+
+	for _, plugin := range plugins {
+		handlers = append(handlers, converter.Handler(plugin, secret, logger))
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "hello world")
+		for _, handler := range handlers {
+			handler.ServeHTTP(w, r)
+		}
 	}
 }
 
