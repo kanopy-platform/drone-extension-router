@@ -28,7 +28,7 @@ func TestHandleRoot(t *testing.T) {
 	req := newSignedRequest(t, converter.V1, httptest.NewRequest("GET", "/", strings.NewReader("{}")))
 	testHandler.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, `{"data":"\n","kind":""}`, w.Body.String())
+	assert.Equal(t, `{"data":"","kind":""}`, w.Body.String())
 }
 
 func TestHandleHealthz(t *testing.T) {
