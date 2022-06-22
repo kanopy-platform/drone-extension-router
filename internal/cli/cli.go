@@ -24,7 +24,6 @@ func NewRootCommand() *cobra.Command {
 
 	cmd.PersistentFlags().String("log-level", "info", "Configure log level")
 	cmd.PersistentFlags().String("listen-address", ":8080", "Server listen address")
-	cmd.PersistentFlags().String("secret", "", "Token used to authenticate http requests to the extension")
 
 	cmd.AddCommand(newVersionCommand())
 	return cmd
@@ -53,10 +52,10 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 
 func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 	addr := viper.GetString("listen-address")
-	secret := viper.GetString("secret")
 
+	secret := viper.GetString("secret")
 	if secret == "" {
-		return fmt.Errorf("--secret flag is required")
+		return fmt.Errorf("DRONE_SECRET environment variable is required")
 	}
 
 	log.Printf("Starting server on %s\n", addr)
