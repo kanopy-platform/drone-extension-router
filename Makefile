@@ -10,6 +10,15 @@ test: ## Run tests in local environment
 	golangci-lint run --timeout=5m $(PKG)
 	go test -cover -run=$(RUN) $(PKG)
 
+.PHONY: license-check
+license-check:
+	licensed cache
+	licensed status
+
+.PHONY: docker-license-check
+docker-license-check:
+	@docker run --entrypoint make -v $(shell pwd):/app public.ecr.aws/kanopy/licensed-go license-check
+
 .PHONY: docker-build-test
 docker-build-test: ## Build local development docker image with cached go modules, builds, and tests
 	@docker build -f build/Dockerfile-test -t $(CMD_NAME)-test:latest .
