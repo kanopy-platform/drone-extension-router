@@ -1,17 +1,15 @@
 package server
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/99designs/httpsignatures-go"
-	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/converter"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,12 +25,10 @@ func TestHandleRoot(t *testing.T) {
 	t.Parallel()
 
 	w := httptest.NewRecorder()
-	pipeline := "name: default"
-	req := newSignedRequest(t, converter.V1, converter.Request{Config: drone.Config{Data: pipeline}})
-
+	req := newSignedRequest(t, converter.V1, httptest.NewRequest("GET", "/", strings.NewReader("{}")))
 	testHandler.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, fmt.Sprintf(`{"data":"%s","kind":""}`, pipeline), w.Body.String())
+	assert.Equal(t, `{"data":"","kind":""}`, w.Body.String())
 }
 
 func TestHandleHealthz(t *testing.T) {
@@ -51,18 +47,9 @@ func TestHandleHealthz(t *testing.T) {
 }
 
 // https://github.com/drone/drone-go/blob/v1.7.1/plugin/converter/handler_test.go#L31
-func newSignedRequest(t *testing.T, accept string, extReq interface{}) *http.Request {
-	// marshal extension request to json string
-	reqBytes, err := json.Marshal(extReq)
-	assert.NoError(t, err)
-
-	// setup http request
-	httpReq := httptest.NewRequest("GET", "/", bytes.NewReader(reqBytes))
-	httpReq.Header.Add("Accept", accept)
-	httpReq.Header.Add("Date", time.Now().UTC().Format(http.TimeFormat))
-
-	// sign http request
-	assert.NoError(t, httpsignatures.DefaultSha256Signer.AuthRequest("hmac-key", "thisisnotsafe", httpReq))
-
-	return httpReq
+func newSignedRequest(t *testing.T, accept string, req *http.Request) *http.Request {
+	req.Header.Add("Accept", accept)
+	req.Header.Add("Date", time.Now().UTC().Format(http.TimeFormat))
+	assert.NoError(t, httpsignatures.DefaultSha256Signer.AuthRequest("hmac-key", "thisisnotsafe", req))
+	return req
 }
