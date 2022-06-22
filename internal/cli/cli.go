@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/drone/drone-go/plugin/converter"
+	"github.com/kanopy-platform/drone-convert/internal/plugin"
 	"github.com/kanopy-platform/drone-convert/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -53,6 +55,7 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 }
 
 func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
+	convertPlugins := []converter.Plugin{}
 	addr := viper.GetString("listen-address")
 
 	secret := viper.GetString("secret")
@@ -60,7 +63,17 @@ func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("--secret flag is required")
 	}
 
+	if viper.GetBool("pathschanged-enabled") {
+		convertPlugins = append(convertPlugins, plugin.NewPathsChanged())
+	}
+
 	log.Printf("Starting server on %s\n", addr)
 
-	return http.ListenAndServe(addr, server.New(secret))
+	srv := server.New(secret, server.WithPluginRouter(
+		plugin.NewRouter(
+			plugin.WithConvertPlugins(convertPlugins...),
+		),
+	))
+
+	return http.ListenAndServe(addr, srv)
 }
