@@ -28,7 +28,7 @@ docker:
 
 .PHONY: docker-run
 docker-run: docker ## Build and run the application in a local docker container
-	@docker run -p ${DEFAULT_APP_PORT}:${DEFAULT_APP_PORT} $(CMD_NAME):latest
+	@docker run -e DRONE_SECRET=thisisnotsafe -p ${DEFAULT_APP_PORT}:${DEFAULT_APP_PORT} $(CMD_NAME):latest
 
 .PHONY: help
 help:

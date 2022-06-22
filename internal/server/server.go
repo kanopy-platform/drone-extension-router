@@ -5,26 +5,55 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/drone/drone-go/plugin/converter"
+	"github.com/kanopy-platform/drone-convert/internal/plugin"
 	"github.com/kanopy-platform/go-http-middleware/logging"
+	log "github.com/sirupsen/logrus"
 )
 
 type Server struct {
-	router *http.ServeMux
+	router       *http.ServeMux
+	secret       string
+	pluginRouter *plugin.Router
 }
 
-func New() http.Handler {
-	s := &Server{router: http.NewServeMux()}
+// options
+type ServerOptFunc func(*Server)
+
+func WithPluginRouter(router *plugin.Router) func(*Server) {
+	return func(s *Server) {
+		s.pluginRouter = router
+	}
+}
+
+func New(secret string, opts ...ServerOptFunc) http.Handler {
+	s := &Server{
+		router:       http.NewServeMux(),
+		secret:       secret,
+		pluginRouter: plugin.NewDefaultRouter(),
+	}
+
+	for _, opt := range opts {
+		opt(s)
+	}
+
 	logrusMiddleware := logging.NewLogrus()
 
-	s.router.HandleFunc("/", s.handleRoot())
+	s.router.HandleFunc("/", s.handlePlugins())
 	s.router.HandleFunc("/healthz", s.handleHealthz())
 
 	return logrusMiddleware.Middleware(s.router)
 }
 
-func (s *Server) handleRoot() http.HandlerFunc {
+func (s *Server) handlePlugins() http.HandlerFunc {
+	logger := log.StandardLogger()
+	convertHandler := converter.Handler(s.pluginRouter, s.secret, logger)
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "hello world")
+		switch r.Header.Get("Accept") {
+		case converter.V1:
+			convertHandler.ServeHTTP(w, r)
+		}
 	}
 }
 
