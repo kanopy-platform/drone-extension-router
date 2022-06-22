@@ -23,21 +23,22 @@ func TestConvertRouter(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		router *Router
-		input  string
-		want   string
+		description string
+		router      *Router
+		input       string
+		want        string
 	}{
-		// test without convert plugins
 		{
-			router: NewRouter(),
-			input:  "name: default",
-			want:   "name: default",
+			description: "test without convert plugins",
+			router:      NewRouter(),
+			input:       "name: default",
+			want:        "name: default",
 		},
-		// test with multiple convert plugins
 		{
-			router: NewRouter(WithConvertPlugins(newAddNewline(), newAddNewline())),
-			input:  "name: default",
-			want:   "name: default\n\n",
+			description: "test with multiple convert plugins",
+			router:      NewRouter(WithConvertPlugins(newAddNewline(), newAddNewline())),
+			input:       "name: default",
+			want:        "name: default\n\n",
 		},
 	}
 
@@ -45,6 +46,6 @@ func TestConvertRouter(t *testing.T) {
 		req := &converter.Request{Config: drone.Config{Data: test.input}}
 		conf, err := test.router.Convert(context.Background(), req)
 		assert.NoError(t, err)
-		assert.Equal(t, test.want, conf.Data)
+		assert.Equal(t, test.want, conf.Data, test.description)
 	}
 }
