@@ -36,6 +36,7 @@ func (r *Router) Convert(ctx context.Context, req *converter.Request) (*drone.Co
 			return nil, err
 		}
 
+		// modify the request object before it gets passed to the next plugin
 		req.Config = *out
 	}
 
