@@ -30,7 +30,7 @@ func New(secret string, opts ...ServerOptFunc) http.Handler {
 	s := &Server{
 		router:       http.NewServeMux(),
 		secret:       secret,
-		pluginRouter: plugin.NewDefaultRouter(),
+		pluginRouter: plugin.NewRouter(),
 	}
 
 	for _, opt := range opts {
