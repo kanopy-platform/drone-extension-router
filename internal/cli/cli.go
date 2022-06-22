@@ -25,6 +25,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String("log-level", "info", "Configure log level")
 	cmd.PersistentFlags().String("listen-address", ":8080", "Server listen address")
 	cmd.PersistentFlags().String("secret", "", "Token used to authenticate http requests to the extension")
+	cmd.PersistentFlags().Bool("pathschanged-enabled", false, "Enable pathschanged conversion extension")
 
 	cmd.AddCommand(newVersionCommand())
 	return cmd
