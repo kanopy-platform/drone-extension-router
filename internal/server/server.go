@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/drone/drone-go/plugin/converter"
-	"github.com/kanopy-platform/drone-convert/internal/plugin"
+	"github.com/kanopy-platform/drone-extension-router/internal/plugin"
 	"github.com/kanopy-platform/go-http-middleware/logging"
 	log "github.com/sirupsen/logrus"
 )
