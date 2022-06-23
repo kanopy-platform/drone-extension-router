@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/drone/drone-go/plugin/converter"
+	"github.com/kanopy-platform/drone-extension-router/internal/plugin"
 	"github.com/kanopy-platform/drone-extension-router/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -24,6 +26,7 @@ func NewRootCommand() *cobra.Command {
 
 	cmd.PersistentFlags().String("log-level", "info", "Configure log level")
 	cmd.PersistentFlags().String("listen-address", ":8080", "Server listen address")
+	cmd.PersistentFlags().Bool("pathschanged-enabled", false, "Enable pathschanged conversion extension")
 
 	cmd.AddCommand(newVersionCommand())
 	return cmd
@@ -51,6 +54,7 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 }
 
 func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
+	convertPlugins := []converter.Plugin{}
 	addr := viper.GetString("listen-address")
 
 	secret := viper.GetString("secret")
@@ -58,7 +62,17 @@ func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("DRONE_SECRET environment variable is required")
 	}
 
+	if viper.GetBool("pathschanged-enabled") {
+		convertPlugins = append(convertPlugins, plugin.NewPathsChanged())
+	}
+
 	log.Printf("Starting server on %s\n", addr)
 
-	return http.ListenAndServe(addr, server.New(secret))
+	srv := server.New(secret, server.WithPluginRouter(
+		plugin.NewRouter(
+			plugin.WithConvertPlugins(convertPlugins...),
+		),
+	))
+
+	return http.ListenAndServe(addr, srv)
 }
