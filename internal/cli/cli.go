@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kanopy-platform/drone-convert/internal/server"
+	"github.com/kanopy-platform/drone-extension-router/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -17,7 +17,7 @@ func NewRootCommand() *cobra.Command {
 	root := &RootCommand{}
 
 	cmd := &cobra.Command{
-		Use:               "drone-convert",
+		Use:               "drone-extension-router",
 		PersistentPreRunE: root.persistentPreRunE,
 		RunE:              root.runE,
 	}

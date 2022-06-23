@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kanopy-platform/drone-convert/internal/cli"
+	"github.com/kanopy-platform/drone-extension-router/internal/cli"
 	log "github.com/sirupsen/logrus"
 )
 

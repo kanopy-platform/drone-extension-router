@@ -1,4 +1,4 @@
-module github.com/kanopy-platform/drone-convert
+module github.com/kanopy-platform/drone-extension-router
 
 go 1.17
 
