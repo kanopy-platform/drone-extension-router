@@ -5,7 +5,7 @@ WORKDIR /go/src/app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -ldflags="-X 'github.com/kanopy-platform/drone-convert/internal/version.version=${VERSION}' -X 'github.com/kanopy-platform/drone-convert/internal/version.gitCommit=${GIT_COMMIT}'" -o /go/bin/app
+RUN go build -ldflags="-X 'github.com/kanopy-platform/drone-extension-router/internal/version.version=${VERSION}' -X 'github.com/kanopy-platform/drone-extension-router/internal/version.gitCommit=${GIT_COMMIT}'" -o /go/bin/app
 
 FROM debian:buster-slim
 RUN apt-get update && apt-get install --yes ca-certificates
