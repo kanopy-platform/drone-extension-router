@@ -5,5 +5,5 @@ import (
 )
 
 func TestPathsChangedFulfillsPluginInterface(t *testing.T) {
-	_ = NewRouter(WithConvertPlugins(NewPathsChanged()))
+	_ = NewRouter("", WithConvertPlugins(NewPathsChanged()))
 }
