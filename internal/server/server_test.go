@@ -11,13 +11,14 @@ import (
 
 	"github.com/99designs/httpsignatures-go"
 	"github.com/drone/drone-go/plugin/converter"
+	"github.com/kanopy-platform/drone-extension-router/internal/plugin"
 	"github.com/stretchr/testify/assert"
 )
 
 var testHandler http.Handler
 
 func TestMain(m *testing.M) {
-	testHandler = New("thisisnotsafe")
+	testHandler = New(plugin.NewRouter("thisisnotsafe"))
 	os.Exit(m.Run())
 }
 

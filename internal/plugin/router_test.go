@@ -30,13 +30,13 @@ func TestConvertRouter(t *testing.T) {
 	}{
 		{
 			description: "test without convert plugins",
-			router:      NewRouter(),
+			router:      NewRouter(""),
 			input:       "name: default",
 			want:        "name: default",
 		},
 		{
 			description: "test with multiple convert plugins",
-			router:      NewRouter(WithConvertPlugins(newAddNewline(), newAddNewline())),
+			router:      NewRouter("", WithConvertPlugins(newAddNewline(), newAddNewline())),
 			input:       "name: default",
 			want:        "name: default\n\n",
 		},

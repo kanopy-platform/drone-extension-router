@@ -68,11 +68,11 @@ func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 
 	log.Printf("Starting server on %s\n", addr)
 
-	srv := server.New(secret, server.WithPluginRouter(
-		plugin.NewRouter(
-			plugin.WithConvertPlugins(convertPlugins...),
-		),
-	))
+	pluginRouter := plugin.NewRouter(
+		secret,
+		plugin.WithConvertPlugins(convertPlugins...),
+		plugin.WithLogger(log.StandardLogger()),
+	)
 
-	return http.ListenAndServe(addr, srv)
+	return http.ListenAndServe(addr, server.New(pluginRouter))
 }
