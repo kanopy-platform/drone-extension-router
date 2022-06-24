@@ -61,5 +61,7 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	switch req.Header.Get("Accept") {
 	case converter.V1:
 		r.convertHandler.ServeHTTP(res, req)
+	default:
+		http.Error(res, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	}
 }
