@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kanopy-platform/go-http-middleware/logging"
+	"github.com/kanopy-platform/go-http-middleware/prometheus"
 )
 
 type Server struct {
@@ -25,8 +26,10 @@ func New(handler http.Handler, opts ...ServerOptFunc) http.Handler {
 	}
 
 	logrusMiddleware := logging.NewLogrus()
+	promMiddleware := prometheus.New()
 
-	s.router.Handle("/", handler)
+	s.router.Handle("/", promMiddleware.Middleware("/", handler))
+	s.router.Handle("/metrics", promMiddleware.Handler())
 	s.router.HandleFunc("/healthz", s.handleHealthz())
 
 	return logrusMiddleware.Middleware(s.router)
