@@ -61,7 +61,7 @@ steps:
       secret_key:
         from_secret: ecr_secret_key
     when:
-      event: [push]
+      event: [push, pull_request]
 
   - name: publish-tag
     image: plugins/kaniko-ecr
