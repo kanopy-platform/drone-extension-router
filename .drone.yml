@@ -48,7 +48,7 @@ steps:
       - name: cache
         path: /go
     settings:
-      create_repository: true
+      create_repository: false
       repo: ${DRONE_REPO_NAME}
       build_args:
         - GIT_COMMIT
