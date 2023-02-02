@@ -7,6 +7,7 @@ import (
 
 	"github.com/drone/drone-go/plugin/converter"
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin"
+	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/pathschanged"
 	"github.com/kanopy-platform/drone-extension-router/internal/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -63,7 +64,7 @@ func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 	}
 
 	if viper.GetBool("pathschanged-enabled") {
-		convertPlugins = append(convertPlugins, plugin.NewPathsChanged())
+		convertPlugins = append(convertPlugins, pathschanged.New())
 	}
 
 	log.Printf("Starting server on %s\n", addr)
