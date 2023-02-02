@@ -13,6 +13,8 @@ func init() {
 	dronemanifest.Register(pipelineDriver)
 }
 
+// Register a Pipeline resource, since it is not provided by the runner-go/manifest package.
+// This re-uses the existing Pipeline resource from the runner-kube project.
 func pipelineDriver(r *manifest.RawResource) (manifest.Resource, bool, error) {
 	if r.Kind != resource.Kind {
 		return nil, false, nil
@@ -32,7 +34,7 @@ func Encode(m *dronemanifest.Manifest) (string, error) {
 		return "", nil
 	}
 
-	s := bytes.NewBuffer(nil)
+	buf := bytes.NewBuffer(nil)
 
 	for idx, r := range m.Resources {
 		delim := "\n---\n"
@@ -40,19 +42,19 @@ func Encode(m *dronemanifest.Manifest) (string, error) {
 			delim = "---\n"
 		}
 
-		b, err := yaml.Marshal(r)
+		resourceBytes, err := yaml.Marshal(r)
 		if err != nil {
 			return "", err
 		}
 
-		if _, err := s.WriteString(delim); err != nil {
+		if _, err := buf.WriteString(delim); err != nil {
 			return "", err
 		}
 
-		if _, err := s.Write(b); err != nil {
+		if _, err := buf.Write(resourceBytes); err != nil {
 			return "", err
 		}
 	}
 
-	return s.String(), nil
+	return buf.String(), nil
 }
