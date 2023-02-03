@@ -17,21 +17,25 @@ func TestDefaults(t *testing.T) {
 	tests := []struct {
 		desc    string
 		config  defaults.Config
-		request string
+		request []dronemanifest.Resource
 		want    []dronemanifest.Resource
 	}{
-		{desc: "test with empty defaults and request"},
 		{
-			desc:    "test without defaults",
-			request: "kind: pipeline\n",
-			want: []dronemanifest.Resource{
-				&resource.Pipeline{Kind: "pipeline"},
-			},
+			desc: "test with empty defaults and request",
 		},
 		{
-			desc:    "test with defaults",
-			config:  defaults.Config{Pipeline: resource.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}}},
-			request: "kind: pipeline\nnode_selector:\n  r: r\n  test: r",
+			desc:    "test without defaults",
+			request: []dronemanifest.Resource{&resource.Pipeline{Kind: "pipeline"}},
+			want:    []dronemanifest.Resource{&resource.Pipeline{Kind: "pipeline"}},
+		},
+		{
+			desc: "test with defaults",
+			config: defaults.Config{
+				Pipeline: resource.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}},
+			},
+			request: []dronemanifest.Resource{
+				&resource.Pipeline{Kind: "pipeline", NodeSelector: map[string]string{"r": "r", "test": "r"}},
+			},
 			want: []dronemanifest.Resource{
 				&resource.Pipeline{Kind: "pipeline", NodeSelector: map[string]string{"r": "r", "d": "d", "test": "r"}},
 			},
@@ -44,16 +48,15 @@ func TestDefaults(t *testing.T) {
 					{Key: "dedicated", Operator: "Equal", Value: "drone", Effect: "NoSchedule"},
 				},
 			}},
-			request: `---
-kind: pipeline
-node_selector:
-  instancegroup: batch
-tolerations:
-- key: dedicated
-  operator: Equal
-  value: batch
-  effect: NoSchedule
-`,
+			request: []dronemanifest.Resource{
+				&resource.Pipeline{
+					Kind:         "pipeline",
+					NodeSelector: map[string]string{"instancegroup": "batch"},
+					Tolerations: []resource.Toleration{
+						{Key: "dedicated", Operator: "Equal", Value: "batch", Effect: "NoSchedule"},
+					},
+				},
+			},
 			want: []dronemanifest.Resource{
 				&resource.Pipeline{
 					Kind:         "pipeline",
@@ -67,12 +70,10 @@ tolerations:
 		{
 			desc:   "test with multiple objects",
 			config: defaults.Config{Pipeline: resource.Pipeline{Type: "test", Name: "test"}},
-			request: `kind: pipeline
-name: user
----
-kind: secret
-name: user
-`,
+			request: []dronemanifest.Resource{
+				&resource.Pipeline{Kind: "pipeline", Name: "user"},
+				&dronemanifest.Secret{Kind: "secret", Name: "user"},
+			},
 			want: []dronemanifest.Resource{
 				&resource.Pipeline{Kind: "pipeline", Type: "test", Name: "user"},
 				&dronemanifest.Secret{Kind: "secret", Name: "user"},
@@ -83,9 +84,12 @@ name: user
 	for _, test := range tests {
 		d := defaults.New(test.config)
 
+		reqData, err := manifest.Encode(&dronemanifest.Manifest{Resources: test.request})
+		assert.NoError(t, err)
+
 		req := &converter.Request{
 			Config: drone.Config{
-				Data: test.request,
+				Data: reqData,
 			},
 		}
 
