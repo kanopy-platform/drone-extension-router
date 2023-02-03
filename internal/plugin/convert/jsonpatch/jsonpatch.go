@@ -12,12 +12,14 @@ import (
 )
 
 type JsonPatch struct {
+	options  *jpatch.ApplyOptions
 	Pipeline jpatch.Patch `json:"pipeline,omitempty"`
 	Secret   jpatch.Patch `json:"secret,omitempty"`
 }
 
 func New(patches string) (*JsonPatch, error) {
-	j := &JsonPatch{}
+	j := &JsonPatch{options: jpatch.NewApplyOptions()}
+	j.options.EnsurePathExistsOnAdd = true
 
 	if err := yaml.Unmarshal([]byte(patches), j); err != nil {
 		return nil, err
@@ -40,12 +42,12 @@ func (j *JsonPatch) Convert(ctx context.Context, req *converter.Request) (*drone
 
 		switch resource.GetKind() {
 		case "pipeline":
-			resourceBytes, err = j.patch(resourceBytes, j.Pipeline)
+			resourceBytes, err = j.Pipeline.ApplyWithOptions(resourceBytes, j.options)
 			if err != nil {
 				return nil, err
 			}
 		case "secret":
-			resourceBytes, err = j.patch(resourceBytes, j.Secret)
+			resourceBytes, err = j.Secret.ApplyWithOptions(resourceBytes, j.options)
 			if err != nil {
 				return nil, err
 			}
@@ -62,18 +64,4 @@ func (j *JsonPatch) Convert(ctx context.Context, req *converter.Request) (*drone
 	}
 
 	return &drone.Config{Data: data}, nil
-}
-
-func (j *JsonPatch) patch(data []byte, patch jpatch.Patch) ([]byte, error) {
-	var err error
-
-	opts := jpatch.NewApplyOptions()
-	opts.EnsurePathExistsOnAdd = true
-
-	data, err = patch.ApplyWithOptions(data, opts)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
 }
