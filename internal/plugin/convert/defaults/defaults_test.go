@@ -16,7 +16,7 @@ import (
 func TestDefaults(t *testing.T) {
 	tests := []struct {
 		desc    string
-		opts    []defaults.Option
+		config  defaults.Config
 		request string
 		want    []dronemanifest.Resource
 	}{
@@ -30,7 +30,7 @@ func TestDefaults(t *testing.T) {
 		},
 		{
 			desc:    "test with defaults",
-			opts:    []defaults.Option{defaults.WithPipeline(resource.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}})},
+			config:  defaults.Config{Pipeline: resource.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}}},
 			request: "kind: pipeline\nnode_selector:\n  r: r\n  test: r",
 			want: []dronemanifest.Resource{
 				&resource.Pipeline{Kind: "pipeline", NodeSelector: map[string]string{"r": "r", "d": "d", "test": "r"}},
@@ -38,14 +38,12 @@ func TestDefaults(t *testing.T) {
 		},
 		{
 			desc: "test default node_selector and tolerations",
-			opts: []defaults.Option{
-				defaults.WithPipeline(resource.Pipeline{
-					NodeSelector: map[string]string{"instancegroup": "drone"},
-					Tolerations: []resource.Toleration{
-						{Key: "dedicated", Operator: "Equal", Value: "drone", Effect: "NoSchedule"},
-					},
-				}),
-			},
+			config: defaults.Config{resource.Pipeline{
+				NodeSelector: map[string]string{"instancegroup": "drone"},
+				Tolerations: []resource.Toleration{
+					{Key: "dedicated", Operator: "Equal", Value: "drone", Effect: "NoSchedule"},
+				},
+			}},
 			request: `---
 kind: pipeline
 node_selector:
@@ -67,8 +65,8 @@ tolerations:
 			},
 		},
 		{
-			desc: "test with multiple objects",
-			opts: []defaults.Option{defaults.WithPipeline(resource.Pipeline{Type: "test", Name: "test"})},
+			desc:   "test with multiple objects",
+			config: defaults.Config{Pipeline: resource.Pipeline{Type: "test", Name: "test"}},
 			request: `kind: pipeline
 name: user
 ---
@@ -83,7 +81,7 @@ name: user
 	}
 
 	for _, test := range tests {
-		d := defaults.New(test.opts...)
+		d := defaults.New(test.config)
 
 		req := &converter.Request{
 			Config: drone.Config{
