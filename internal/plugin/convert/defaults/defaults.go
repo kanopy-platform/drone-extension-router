@@ -41,7 +41,6 @@ func (d *Defaults) mergeDefaults(m *dronemanifest.Manifest) error {
 			return err
 		}
 
-		var out []byte
 		switch r.GetKind() {
 		case dronemanifest.KindPipeline:
 			defaultBytes, err := json.Marshal(d.pipeline)
@@ -49,7 +48,7 @@ func (d *Defaults) mergeDefaults(m *dronemanifest.Manifest) error {
 				return err
 			}
 
-			out, err = strategicpatch.StrategicMergePatch(defaultBytes, userBytes, d.pipeline)
+			userBytes, err = strategicpatch.StrategicMergePatch(defaultBytes, userBytes, d.pipeline)
 			if err != nil {
 				return err
 			}
@@ -57,7 +56,7 @@ func (d *Defaults) mergeDefaults(m *dronemanifest.Manifest) error {
 			return nil
 		}
 
-		if err := json.Unmarshal(out, m.Resources[idx]); err != nil {
+		if err := json.Unmarshal(userBytes, m.Resources[idx]); err != nil {
 			return err
 		}
 	}
