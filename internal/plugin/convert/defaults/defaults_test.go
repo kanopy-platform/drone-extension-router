@@ -97,6 +97,7 @@ func TestDefaults(t *testing.T) {
 		assert.NoError(t, err)
 
 		got, err := manifest.Decode(config.Data)
+		assert.NoError(t, err)
 		assert.Equal(t, test.want, got.Resources, test.desc)
 	}
 }
