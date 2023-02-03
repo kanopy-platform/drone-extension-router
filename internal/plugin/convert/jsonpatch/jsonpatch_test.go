@@ -15,26 +15,21 @@ import (
 
 func TestJsonPatch(t *testing.T) {
 	config := `---
-patchMap:
-  pipelinePatch:
-  - op: add
-    path: /node_selector/instancegroup
-    value: drone
-  - op: add
-    path: /tolerations/-
-    value:
-      key: dedicated
-      operator: Equal
-      value: drone
-      effect: NoSchedule
-  secretPatch:
-  - op: add
-    path: /name
-    value: test
 pipeline:
-- pipelinePatch
+- op: add
+  path: /node_selector/instancegroup
+  value: drone
+- op: add
+  path: /tolerations/-
+  value:
+    key: dedicated
+    operator: Equal
+    value: drone
+    effect: NoSchedule
 secret:
-- secretPatch
+- op: add
+  path: /name
+  value: test
 `
 
 	j, err := jsonpatch.New(config)

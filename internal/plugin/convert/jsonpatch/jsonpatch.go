@@ -12,9 +12,8 @@ import (
 )
 
 type JsonPatch struct {
-	PatchMap map[string]jpatch.Patch `json:"patchMap,omitempty"`
-	Pipeline []string                `json:"pipeline,omitempty"`
-	Secret   []string                `json:"secret,omitempty"`
+	Pipeline jpatch.Patch `json:"pipeline,omitempty"`
+	Secret   jpatch.Patch `json:"secret,omitempty"`
 }
 
 func New(patches string) (*JsonPatch, error) {
@@ -41,12 +40,12 @@ func (j *JsonPatch) Convert(ctx context.Context, req *converter.Request) (*drone
 
 		switch resource.GetKind() {
 		case "pipeline":
-			resourceBytes, err = j.patch(resourceBytes, j.Pipeline...)
+			resourceBytes, err = j.patch(resourceBytes, j.Pipeline)
 			if err != nil {
 				return nil, err
 			}
 		case "secret":
-			resourceBytes, err = j.patch(resourceBytes, j.Secret...)
+			resourceBytes, err = j.patch(resourceBytes, j.Secret)
 			if err != nil {
 				return nil, err
 			}
@@ -65,19 +64,15 @@ func (j *JsonPatch) Convert(ctx context.Context, req *converter.Request) (*drone
 	return &drone.Config{Data: data}, nil
 }
 
-func (j *JsonPatch) patch(data []byte, keys ...string) ([]byte, error) {
+func (j *JsonPatch) patch(data []byte, patch jpatch.Patch) ([]byte, error) {
 	var err error
 
 	opts := jpatch.NewApplyOptions()
 	opts.EnsurePathExistsOnAdd = true
 
-	for _, key := range keys {
-		if patch, ok := j.PatchMap[key]; ok {
-			data, err = patch.ApplyWithOptions(data, opts)
-			if err != nil {
-				return nil, err
-			}
-		}
+	data, err = patch.ApplyWithOptions(data, opts)
+	if err != nil {
+		return nil, err
 	}
 
 	return data, nil
