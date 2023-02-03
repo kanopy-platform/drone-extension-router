@@ -12,7 +12,7 @@ import (
 )
 
 type Config struct {
-	Pipeline resource.Pipeline `json:"pipeline"`
+	Pipeline *resource.Pipeline `json:"pipeline,omitempty"`
 }
 
 type Defaults struct {
