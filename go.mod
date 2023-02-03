@@ -7,6 +7,7 @@ require (
 	github.com/drone-runners/drone-runner-kube v1.0.0-rc.3
 	github.com/drone/drone-go v1.7.2-0.20220308165842-f9e4fe31c2af
 	github.com/drone/runner-go v1.12.0
+	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/kanopy-platform/go-http-middleware v0.1.1
 	github.com/meltwater/drone-convert-pathschanged v1.0.0
 	github.com/sirupsen/logrus v1.8.1
@@ -33,6 +34,7 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
