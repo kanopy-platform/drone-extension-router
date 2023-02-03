@@ -9,6 +9,10 @@ import (
 
 type (
 	Config struct {
+		Convert Convert `json:"convert"`
+	}
+
+	Convert struct {
 		Defaults     Defaults     `json:"defaults"`
 		Pathschanged Pathschanged `json:"pathschanged"`
 	}
@@ -30,11 +34,11 @@ func New() *Config {
 func (c *Config) EnabledConvertPlugins() []converter.Plugin {
 	plugins := []converter.Plugin{}
 
-	if c.Defaults.Enable {
-		plugins = append(plugins, defaults.New(defaults.Config{Pipeline: c.Defaults.Pipeline}))
+	if c.Convert.Defaults.Enable {
+		plugins = append(plugins, defaults.New(defaults.Config{Pipeline: c.Convert.Defaults.Pipeline}))
 	}
 
-	if c.Pathschanged.Enable {
+	if c.Convert.Pathschanged.Enable {
 		plugins = append(plugins, pathschanged.New())
 	}
 

@@ -10,24 +10,28 @@ import (
 
 func TestConfig(t *testing.T) {
 	data := `---
-defaults:
-  enable: true
-  pipeline:
-    node_selector:
-      instancegroup: drone
-    tolerations:
-    - key: dedicated
-      operator: Equal
-      value: drone
-      effect: NoSchedule
-pathschanged:
-  enable: true`
+convert:
+  defaults:
+    enable: true
+    pipeline:
+      node_selector:
+        instancegroup: drone
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: drone
+        effect: NoSchedule
+  pathschanged:
+    enable: true`
 
 	c := config.New()
 	assert.NoError(t, yaml.Unmarshal([]byte(data), c))
 
-	assert.True(t, c.Defaults.Enable)
-	assert.True(t, c.Pathschanged.Enable)
-	assert.Equal(t, "drone", c.Defaults.Pipeline.NodeSelector["instancegroup"])
-	assert.Equal(t, "drone", c.Defaults.Pipeline.Tolerations[0].Value)
+	enabled := c.EnabledConvertPlugins()
+	assert.Len(t, enabled, 2)
+
+	assert.True(t, c.Convert.Defaults.Enable)
+	assert.True(t, c.Convert.Pathschanged.Enable)
+	assert.Equal(t, "drone", c.Convert.Defaults.Pipeline.NodeSelector["instancegroup"])
+	assert.Equal(t, "drone", c.Convert.Defaults.Pipeline.Tolerations[0].Value)
 }
