@@ -9,19 +9,31 @@ import (
 )
 
 func TestEncoding(t *testing.T) {
-	data := "kind: pipeline\nname: pipeline\n---\nkind: secret\nname: secret\n---\nkind: signature\nhmac: signature"
+	data := `
+kind: pipeline
+name: pipeline
+---
+kind: secret
+name: secret
+---
+kind: signature
+hmac: signature`
 
-	m, err := manifest.Decode(data)
+	resources, err := manifest.Decode(data)
 	assert.NoError(t, err)
-	assert.Equal(t, "pipeline", m.Resources[0].GetKind())
-	assert.Equal(t, "secret", m.Resources[1].GetKind())
-	assert.Equal(t, "signature", m.Resources[2].GetKind())
+	assert.Equal(t, manifest.KindPipeline, resources[0].GetKind())
+	assert.Equal(t, manifest.Kind("secret"), resources[1].GetKind())
+	assert.Equal(t, manifest.Kind("signature"), resources[2].GetKind())
 
-	encoded, err := manifest.Encode(m)
+	pipeline, ok := resources[0].(*manifest.Pipeline)
+	assert.True(t, ok)
+	assert.Equal(t, "pipeline", pipeline.Name)
+
+	encoded, err := manifest.Encode(resources)
 	assert.NoError(t, err)
 
-	docs := strings.Split(encoded, "\n---")
-	assert.Contains(t, docs[0], "kind: pipeline")
-	assert.Contains(t, docs[1], "kind: secret")
-	assert.Contains(t, docs[2], "kind: signature")
+	docs := strings.Split(encoded, "\n---\n")
+	assert.Equal(t, "---\nkind: pipeline\nname: pipeline\n", docs[0])
+	assert.Equal(t, "kind: secret\nname: secret\n", docs[1])
+	assert.Equal(t, "kind: signature\nhmac: signature\n", docs[2])
 }

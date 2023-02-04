@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/drone-runners/drone-runner-kube/engine/resource"
 	"github.com/drone/drone-go/plugin/converter"
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/defaults"
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/pathschanged"
+	"github.com/kanopy-platform/drone-extension-router/pkg/manifest"
 )
 
 type (
@@ -19,7 +19,7 @@ type (
 
 	Defaults struct {
 		Enable   bool               `json:"enable"`
-		Pipeline *resource.Pipeline `json:"pipeline,omitempty"`
+		Pipeline *manifest.Pipeline `json:"pipeline,omitempty"`
 	}
 
 	Pathschanged struct {
