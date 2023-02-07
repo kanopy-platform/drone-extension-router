@@ -9,11 +9,15 @@ import (
 const separator = "\n---\n"
 
 func Decode(data string) ([]Resource, error) {
+	if data == "" {
+		return nil, nil
+	}
+
 	docs := bytes.Split([]byte(data), []byte(separator))
 
 	var resources []Resource
 	for _, doc := range docs {
-		r := &resource{}
+		r := &Object{}
 		if err := yaml.Unmarshal(doc, r); err != nil {
 			return nil, err
 		}
@@ -59,7 +63,7 @@ func Encode(resources []Resource) (string, error) {
 			return "", err
 		}
 
-		if _, err := buf.Write(resourceBytes); err != nil {
+		if _, err := buf.Write(bytes.TrimSpace(resourceBytes)); err != nil {
 			return "", err
 		}
 	}
