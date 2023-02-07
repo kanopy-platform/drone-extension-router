@@ -7,42 +7,43 @@ const (
 	KindSecret   Kind = "secret"
 )
 
-type (
-	Resource interface {
-		GetKind() Kind
-	}
+type Resource interface {
+	GetKind() Kind
+}
 
-	resource struct {
-		Kind         Kind                   `yaml:"kind" json:"kind"`
-		ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
-	}
-
-	Toleration struct {
-		Key, Operator, Value, Effect string
-	}
-
-	Pipeline struct {
-		Kind         Kind                   `yaml:"kind" json:"kind"`
-		Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
-		Name         string                 `yaml:"name,omitempty" json:"name,omitempty"`
-		NodeSelector map[string]string      `yaml:"node_selector,omitempty" json:"node_selector,omitempty"`
-		Tolerations  []Toleration           `yaml:"tolerations,omitempty" json:"tolerations,omitempty"`
-		ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
-	}
-
-	Secret struct {
-		Kind         Kind                   `yaml:"kind" json:"kind"`
-		Name         string                 `yaml:"name,omitempty" json:"name,omitempty"`
-		ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
-	}
-)
+type resource struct {
+	Kind         Kind                   `yaml:"kind" json:"kind"`
+	ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
+}
 
 func (r *resource) GetKind() Kind {
 	return r.Kind
 }
 
+type (
+	Pipeline struct {
+		Kind         Kind                   `yaml:"kind" json:"kind"`
+		Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
+		Name         string                 `yaml:"name,omitempty" json:"name,omitempty"`
+		ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
+		NodeSelector map[string]string      `yaml:"node_selector,omitempty" json:"node_selector,omitempty"`
+		Tolerations  []Toleration           `yaml:"tolerations,omitempty" json:"tolerations,omitempty"`
+	}
+
+	Toleration struct {
+		Key, Operator, Value, Effect string
+	}
+)
+
 func (p *Pipeline) GetKind() Kind {
 	return KindPipeline
+}
+
+type Secret struct {
+	Kind         Kind                   `yaml:"kind" json:"kind"`
+	Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
+	Name         string                 `yaml:"name,omitempty" json:"name,omitempty"`
+	ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
 }
 
 func (p *Secret) GetKind() Kind {

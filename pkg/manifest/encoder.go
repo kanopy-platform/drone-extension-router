@@ -2,46 +2,33 @@ package manifest
 
 import (
 	"bytes"
-	"io"
 
 	"gopkg.in/yaml.v3"
 )
 
+const separator = "\n---\n"
+
 func Decode(data string) ([]Resource, error) {
-	dec := yaml.NewDecoder(bytes.NewBufferString(data))
+	docs := bytes.Split([]byte(data), []byte(separator))
 
 	var resources []Resource
-	for {
+	for _, doc := range docs {
 		r := &resource{}
-
-		switch err := dec.Decode(r); {
-		case err == io.EOF:
-			return resources, nil
-		case err != nil:
+		if err := yaml.Unmarshal(doc, r); err != nil {
 			return nil, err
 		}
 
 		switch r.GetKind() {
 		case KindPipeline:
-			out, err := yaml.Marshal(r)
-			if err != nil {
-				return nil, err
-			}
-
 			p := &Pipeline{}
-			if err := yaml.Unmarshal(out, p); err != nil {
+			if err := yaml.Unmarshal(doc, p); err != nil {
 				return nil, err
 			}
 
 			resources = append(resources, p)
 		case KindSecret:
-			out, err := yaml.Marshal(r)
-			if err != nil {
-				return nil, err
-			}
-
 			s := &Secret{}
-			if err := yaml.Unmarshal(out, s); err != nil {
+			if err := yaml.Unmarshal(doc, s); err != nil {
 				return nil, err
 			}
 
@@ -50,6 +37,8 @@ func Decode(data string) ([]Resource, error) {
 			resources = append(resources, r)
 		}
 	}
+
+	return resources, nil
 }
 
 func Encode(resources []Resource) (string, error) {
@@ -60,7 +49,7 @@ func Encode(resources []Resource) (string, error) {
 	buf := bytes.NewBuffer(nil)
 	for idx, r := range resources {
 		if idx != 0 {
-			if _, err := buf.WriteString("\n---\n"); err != nil {
+			if _, err := buf.WriteString(separator); err != nil {
 				return "", err
 			}
 		}
