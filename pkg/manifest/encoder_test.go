@@ -81,18 +81,19 @@ inline: signature`,
 		assert.Equal(t, test.decoded, gotDecoded, "Decoding: "+test.desc)
 
 		gotEncoded, err := manifest.Encode(test.decoded)
+		assert.NoError(t, err)
 		assert.Equal(t, test.encoded, gotEncoded, "Encoding: "+test.desc)
 	}
 }
 
 func BenchmarkDecode(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		manifest.Decode("---\ntest: test")
+		_, _ = manifest.Decode("---\ntest: test")
 	}
 }
 
 func BenchmarkEncode(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		manifest.Encode([]manifest.Resource{&manifest.Pipeline{Kind: manifest.KindPipeline}})
+		_, _ = manifest.Encode([]manifest.Resource{&manifest.Pipeline{Kind: manifest.KindPipeline}})
 	}
 }

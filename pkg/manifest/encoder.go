@@ -8,6 +8,8 @@ import (
 
 const separator = "\n---\n"
 
+// Decode parses all YAML documents in the input string, unmarshals
+// to the appropriate type, and outputs a slice of Resource objects.
 func Decode(data string) ([]Resource, error) {
 	if data == "" {
 		return nil, nil
@@ -45,6 +47,8 @@ func Decode(data string) ([]Resource, error) {
 	return resources, nil
 }
 
+// Encode marshals all of the input Resource objects into
+// a single multi-document YAML string.
 func Encode(resources []Resource) (string, error) {
 	if len(resources) < 1 {
 		return "", nil
