@@ -11,6 +11,11 @@ type Resource interface {
 	GetKind() Kind
 }
 
+// Object is used for intermediary marshalling of types that are
+// not currently defined.
+//
+// Note that the `ResourceData` struct tag uses `,inline`, which
+// ensures undefined fields are persisted when decoding/encoding.
 type Object struct {
 	Kind         Kind                   `yaml:"kind" json:"kind"`
 	ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
@@ -21,6 +26,10 @@ func (r *Object) GetKind() Kind {
 }
 
 type (
+	// Pipeline represents a Drone `pipeline` object.
+	//
+	// Note that the `ResourceData` struct tag uses `,inline`, which
+	// ensures undefined fields are persisted when decoding/encoding.
 	Pipeline struct {
 		Kind         Kind                   `yaml:"kind" json:"kind"`
 		Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
@@ -39,6 +48,10 @@ func (p *Pipeline) GetKind() Kind {
 	return KindPipeline
 }
 
+// Secret represents a Drone `secret` object.
+//
+// Note that the `ResourceData` struct tag uses `,inline`, which
+// ensures undefined fields are persisted when decoding/encoding.
 type Secret struct {
 	Kind         Kind                   `yaml:"kind" json:"kind"`
 	Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
