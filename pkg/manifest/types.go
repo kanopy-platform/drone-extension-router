@@ -11,12 +11,12 @@ type Resource interface {
 	GetKind() Kind
 }
 
-type resource struct {
+type Object struct {
 	Kind         Kind                   `yaml:"kind" json:"kind"`
 	ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
 }
 
-func (r *resource) GetKind() Kind {
+func (r *Object) GetKind() Kind {
 	return r.Kind
 }
 

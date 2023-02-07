@@ -1,41 +1,88 @@
 package manifest_test
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/kanopy-platform/drone-extension-router/pkg/manifest"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEncoding(t *testing.T) {
-	data := `
+func TestDecodeEncode(t *testing.T) {
+	tests := []struct {
+		desc    string
+		input   string
+		decoded []manifest.Resource
+		encoded string
+	}{
+		{
+			desc: "test empty input",
+		},
+		{
+			desc:    "test separator prefix",
+			input:   "---\nkind: pipeline\n",
+			decoded: []manifest.Resource{&manifest.Pipeline{Kind: manifest.KindPipeline}},
+			encoded: "kind: pipeline",
+		},
+		{
+			desc: "test multiple resources",
+			input: `
 kind: pipeline
 name: pipeline
+inline: pipeline
 ---
 kind: secret
 name: secret
+inline: secret
 ---
 kind: signature
-hmac: signature`
+hmac: signature
+inline: signature
+`,
+			decoded: []manifest.Resource{
+				&manifest.Pipeline{
+					Kind: manifest.KindPipeline,
+					Name: "pipeline",
+					ResourceData: map[string]interface{}{
+						"inline": "pipeline",
+					},
+				},
+				&manifest.Secret{
+					Kind: manifest.KindSecret,
+					Name: "secret",
+					ResourceData: map[string]interface{}{
+						"inline": "secret",
+					},
+				},
+				&manifest.Object{
+					Kind: manifest.Kind("signature"),
+					ResourceData: map[string]interface{}{
+						"hmac":   "signature",
+						"inline": "signature",
+					},
+				},
+			},
+			encoded: `kind: pipeline
+name: pipeline
+inline: pipeline
+---
+kind: secret
+name: secret
+inline: secret
+---
+kind: signature
+hmac: signature
+inline: signature`,
+		},
+	}
 
-	resources, err := manifest.Decode(data)
-	assert.NoError(t, err)
-	assert.Equal(t, manifest.KindPipeline, resources[0].GetKind())
-	assert.Equal(t, manifest.Kind("secret"), resources[1].GetKind())
-	assert.Equal(t, manifest.Kind("signature"), resources[2].GetKind())
+	for _, test := range tests {
+		gotDecoded, err := manifest.Decode(test.input)
+		assert.NoError(t, err)
+		assert.Equal(t, test.decoded, gotDecoded, "Decoding: "+test.desc)
 
-	pipeline, ok := resources[0].(*manifest.Pipeline)
-	assert.True(t, ok)
-	assert.Equal(t, "pipeline", pipeline.Name)
-
-	encoded, err := manifest.Encode(resources)
-	assert.NoError(t, err)
-
-	docs := strings.Split(encoded, "\n---\n")
-	assert.Equal(t, "kind: pipeline\nname: pipeline\n", docs[0])
-	assert.Equal(t, "kind: secret\nname: secret\n", docs[1])
-	assert.Equal(t, "kind: signature\nhmac: signature\n", docs[2])
+		gotEncoded, err := manifest.Encode(test.decoded)
+		assert.Equal(t, test.encoded, gotEncoded, "Encoding: "+test.desc)
+	}
 }
 
 func BenchmarkDecode(b *testing.B) {
