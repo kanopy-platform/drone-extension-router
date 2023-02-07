@@ -33,7 +33,7 @@ hmac: signature`
 	assert.NoError(t, err)
 
 	docs := strings.Split(encoded, "\n---\n")
-	assert.Equal(t, "---\nkind: pipeline\nname: pipeline\n", docs[0])
+	assert.Equal(t, "kind: pipeline\nname: pipeline\n", docs[0])
 	assert.Equal(t, "kind: secret\nname: secret\n", docs[1])
 	assert.Equal(t, "kind: signature\nhmac: signature\n", docs[2])
 }

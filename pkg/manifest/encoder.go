@@ -1,24 +1,23 @@
 package manifest
 
-import ( "bytes"
+import (
+	"bytes"
 	"io"
 
 	"gopkg.in/yaml.v3"
 )
 
 func Decode(data string) ([]Resource, error) {
-	buf := bytes.NewBufferString(data)
-	var resources []Resource
-	dec := yaml.NewDecoder(buf)
+	dec := yaml.NewDecoder(bytes.NewBufferString(data))
 
+	var resources []Resource
 	for {
 		r := &resource{}
 
-		err := dec.Decode(r)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
+		switch err := dec.Decode(r); {
+		case err == io.EOF:
+			return resources, nil
+		case err != nil:
 			return nil, err
 		}
 
@@ -51,8 +50,6 @@ func Decode(data string) ([]Resource, error) {
 			resources = append(resources, r)
 		}
 	}
-
-	return resources, nil
 }
 
 func Encode(resources []Resource) (string, error) {
@@ -61,19 +58,15 @@ func Encode(resources []Resource) (string, error) {
 	}
 
 	buf := bytes.NewBuffer(nil)
-
 	for idx, r := range resources {
-		delim := "\n---\n"
-		if idx == 0 {
-			delim = "---\n"
+		if idx != 0 {
+			if _, err := buf.WriteString("\n---\n"); err != nil {
+				return "", err
+			}
 		}
 
 		resourceBytes, err := yaml.Marshal(r)
 		if err != nil {
-			return "", err
-		}
-
-		if _, err := buf.WriteString(delim); err != nil {
 			return "", err
 		}
 
