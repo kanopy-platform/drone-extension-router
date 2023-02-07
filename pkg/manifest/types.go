@@ -17,8 +17,9 @@ type Resource interface {
 // Note that the `ResourceData` struct tag uses `,inline`, which
 // ensures undefined fields are persisted when decoding/encoding.
 type Object struct {
-	Kind         Kind                   `yaml:"kind" json:"kind"`
 	ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
+
+	Kind Kind `yaml:"kind" json:"kind"`
 }
 
 func (r *Object) GetKind() Kind {
@@ -31,12 +32,13 @@ type (
 	// Note that the `ResourceData` struct tag uses `,inline`, which
 	// ensures undefined fields are persisted when decoding/encoding.
 	Pipeline struct {
-		Kind         Kind                   `yaml:"kind" json:"kind"`
-		Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
-		Name         string                 `yaml:"name,omitempty" json:"name,omitempty"`
 		ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
-		NodeSelector map[string]string      `yaml:"node_selector,omitempty" json:"node_selector,omitempty"`
-		Tolerations  []Toleration           `yaml:"tolerations,omitempty" json:"tolerations,omitempty"`
+
+		Kind         Kind              `yaml:"kind" json:"kind"`
+		Type         string            `yaml:"type,omitempty" json:"type,omitempty"`
+		Name         string            `yaml:"name,omitempty" json:"name,omitempty"`
+		NodeSelector map[string]string `yaml:"node_selector,omitempty" json:"node_selector,omitempty"`
+		Tolerations  []Toleration      `yaml:"tolerations,omitempty" json:"tolerations,omitempty"`
 	}
 
 	Toleration struct {
@@ -53,10 +55,11 @@ func (p *Pipeline) GetKind() Kind {
 // Note that the `ResourceData` struct tag uses `,inline`, which
 // ensures undefined fields are persisted when decoding/encoding.
 type Secret struct {
-	Kind         Kind                   `yaml:"kind" json:"kind"`
-	Type         string                 `yaml:"type,omitempty" json:"type,omitempty"`
-	Name         string                 `yaml:"name,omitempty" json:"name,omitempty"`
 	ResourceData map[string]interface{} `yaml:",inline" json:",inline"`
+
+	Kind Kind   `yaml:"kind" json:"kind"`
+	Type string `yaml:"type,omitempty" json:"type,omitempty"`
+	Name string `yaml:"name,omitempty" json:"name,omitempty"`
 }
 
 func (p *Secret) GetKind() Kind {
