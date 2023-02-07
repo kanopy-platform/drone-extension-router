@@ -37,3 +37,15 @@ hmac: signature`
 	assert.Equal(t, "kind: secret\nname: secret\n", docs[1])
 	assert.Equal(t, "kind: signature\nhmac: signature\n", docs[2])
 }
+
+func BenchmarkDecode(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		manifest.Decode("---\ntest: test")
+	}
+}
+
+func BenchmarkEncode(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		manifest.Encode([]manifest.Resource{&manifest.Pipeline{Kind: manifest.KindPipeline}})
+	}
+}
