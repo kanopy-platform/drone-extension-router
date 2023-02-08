@@ -18,7 +18,7 @@ convert:
 	assert.NoError(t, yaml.Unmarshal([]byte(data), c))
 
 	enabled := c.EnabledConvertPlugins()
-	assert.Len(t, enabled, 2)
+	assert.Len(t, enabled, 1)
 
 	assert.True(t, c.Convert.Pathschanged.Enable)
 }
