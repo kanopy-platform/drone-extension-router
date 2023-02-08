@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"sigs.k8s.io/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 type RootCommand struct {
@@ -55,10 +54,6 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 }
 
 func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
-	if c.Secret == "" {
-		return fmt.Errorf("DRONE_SECRET environment variable is required")
-	}
-
 	log.Printf("Starting server on %s\n", c.ListenAddress)
 
 	pluginRouter := plugin.NewRouter(
