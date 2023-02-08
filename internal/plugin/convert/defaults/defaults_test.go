@@ -101,11 +101,17 @@ pipeline:
 kind: pipeline
 name: user
 ---
+kind: fake
+fake: field
+---
 kind: secret
 name: user`,
 			want: `kind: pipeline
 type: test
 name: user
+---
+kind: fake
+fake: field
 ---
 kind: secret
 name: user
