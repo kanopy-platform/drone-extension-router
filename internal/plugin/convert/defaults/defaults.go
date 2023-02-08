@@ -30,27 +30,12 @@ func (d *Defaults) Convert(ctx context.Context, req *converter.Request) (*drone.
 	}
 
 	// merge defaults into user-defined resources
-	for idx, r := range resources {
-		userBytes, err := json.Marshal(r)
-		if err != nil {
-			return nil, err
-		}
-
+	for _, r := range resources {
 		switch r.(type) {
 		case *manifest.Pipeline:
-			defaultBytes, err := json.Marshal(d.config.Pipeline)
-			if err != nil {
+			if err := merge(d.config.Pipeline, r); err != nil {
 				return nil, err
 			}
-
-			userBytes, err = jsonpatch.MergePatch(defaultBytes, userBytes)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		if err := json.Unmarshal(userBytes, resources[idx]); err != nil {
-			return nil, err
 		}
 	}
 
@@ -63,4 +48,23 @@ func (d *Defaults) Convert(ctx context.Context, req *converter.Request) (*drone.
 	return &drone.Config{
 		Data: string(data),
 	}, nil
+}
+
+func merge(defaults interface{}, user manifest.Resource) error {
+	defaultBytes, err := json.Marshal(defaults)
+	if err != nil {
+		return err
+	}
+
+	userBytes, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+
+	userBytes, err = jsonpatch.MergePatch(defaultBytes, userBytes)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(userBytes, user)
 }
