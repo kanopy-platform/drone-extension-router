@@ -36,7 +36,8 @@ inline: secret
 ---
 kind: signature
 hmac: signature
-inline: signature
+inline:
+  key: signature
 `,
 			decoded: []manifest.Resource{
 				&manifest.Pipeline{
@@ -56,8 +57,10 @@ inline: signature
 				&manifest.Object{
 					Kind: manifest.Kind("signature"),
 					ResourceData: map[string]interface{}{
-						"hmac":   "signature",
-						"inline": "signature",
+						"hmac": "signature",
+						"inline": map[string]interface{}{
+							"key": "signature",
+						},
 					},
 				},
 			},
@@ -71,7 +74,8 @@ inline: secret
 ---
 kind: signature
 hmac: signature
-inline: signature`,
+inline:
+    key: signature`,
 		},
 	}
 
