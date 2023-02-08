@@ -21,7 +21,7 @@ func TestDecodeEncode(t *testing.T) {
 			desc:    "test separator prefix",
 			input:   "---\nkind: pipeline\n",
 			decoded: []manifest.Resource{&manifest.Pipeline{Kind: manifest.KindPipeline}},
-			encoded: "kind: pipeline",
+			encoded: "kind: pipeline\n",
 		},
 		{
 			desc: "test multiple resources",
@@ -75,7 +75,8 @@ inline: secret
 kind: signature
 hmac: signature
 inline:
-    key: signature`,
+    key: signature
+`,
 		},
 	}
 
