@@ -39,6 +39,15 @@ func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error
 		return err
 	}
 
+	// set log level
+	logLevel, err := log.ParseLevel(c.LogLevel)
+	if err != nil {
+		return err
+	}
+
+	log.SetLevel(logLevel)
+
+	// read config file if specified
 	if c.ConfigFile != "" {
 		data, err := os.ReadFile(c.ConfigFile)
 		if err != nil {
