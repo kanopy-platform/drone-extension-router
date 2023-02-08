@@ -1,4 +1,4 @@
-FROM golang:1.16 as build
+FROM golang:1.20 as build
 ARG VERSION="0.0.0"
 ARG GIT_COMMIT
 WORKDIR /go/src/app
