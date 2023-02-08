@@ -10,11 +10,16 @@ allowed:
   - isc
 reviewed:
   go:
-    - github.com/buildkite/yaml  ## apache
-    - github.com/drone/go-scm/**/*  # bsd
-    - github.com/kanopy-platform/go-http-middleware/*  # apache-2.0
-    - github.com/magiconair/properties  # bsd-2-clause
+    - github.com/buildkite/yaml # Apache-2.0
+    - github.com/drone/go-scm/**/* # BSD-2-Clause-Patent
+    - github.com/gogo/protobuf/* # BSD-3-Clause
+    - github.com/google/go-cmp/**/* # BSD-3-Clause
+    - github.com/kanopy-platform/go-http-middleware/* # Apache-2.0
+    - github.com/magiconair/properties # BSD-2-Clause
     - golang.org/x/**/*  # bsd-style
-    - google.golang.org/protobuf/**/*  # bsd
-    - gopkg.in/ini.v1  # apache-2.0
-    - gopkg.in/yaml.v2  # apache-2.0
+    - google.golang.org/protobuf/**/* # BSD-3-Clause
+    - gopkg.in/inf.v0 # BSD-3-Clause
+    - gopkg.in/ini.v1 # Apache-2.0
+    - gopkg.in/yaml.v2 # Apache-2.0
+    - k8s.io/apimachinery/third_party/forked/golang/* # Apache-2.0, BSD-3-Clause
+    - sigs.k8s.io/yaml # BSD-3-Clause, MIT
