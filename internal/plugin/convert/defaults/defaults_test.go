@@ -29,13 +29,39 @@ func TestDefaults(t *testing.T) {
 		{
 			desc: "test with defaults",
 			config: defaults.Config{
-				Pipeline: manifest.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}},
+				Pipeline: manifest.Pipeline{
+					NodeSelector: map[string]string{"d": "d", "test": "d"},
+					ResourceData: map[string]interface{}{
+						"map": map[string]interface{}{"d": "d", "test": "d"},
+						"list": []interface{}{
+							map[string]interface{}{"test": "d"},
+						},
+					},
+				},
 			},
 			request: []manifest.Resource{
-				&manifest.Pipeline{Kind: "pipeline", NodeSelector: map[string]string{"r": "r", "test": "r"}},
+				&manifest.Pipeline{
+					Kind:         "pipeline",
+					NodeSelector: map[string]string{"r": "r", "test": "r"},
+					ResourceData: map[string]interface{}{
+						"map": map[string]interface{}{"r": "r", "test": "r"},
+						"list": []interface{}{
+							map[string]interface{}{"test": "r"},
+						},
+					},
+				},
 			},
 			want: []manifest.Resource{
-				&manifest.Pipeline{Kind: "pipeline", NodeSelector: map[string]string{"r": "r", "d": "d", "test": "r"}},
+				&manifest.Pipeline{
+					Kind:         "pipeline",
+					NodeSelector: map[string]string{"r": "r", "d": "d", "test": "r"},
+					ResourceData: map[string]interface{}{
+						"map": map[string]interface{}{"r": "r", "d": "d", "test": "r"},
+						"list": []interface{}{
+							map[string]interface{}{"test": "r"},
+						},
+					},
+				},
 			},
 		},
 		{

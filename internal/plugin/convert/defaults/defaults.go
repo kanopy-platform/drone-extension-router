@@ -6,8 +6,8 @@ import (
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/converter"
+	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/kanopy-platform/drone-extension-router/pkg/manifest"
-	"k8s.io/apimachinery/pkg/util/strategicpatch"
 )
 
 type Config struct {
@@ -43,7 +43,7 @@ func (d *Defaults) Convert(ctx context.Context, req *converter.Request) (*drone.
 				return nil, err
 			}
 
-			userBytes, err = strategicpatch.StrategicMergePatch(defaultBytes, userBytes, d.config.Pipeline)
+			userBytes, err = jsonpatch.MergePatch(defaultBytes, userBytes)
 			if err != nil {
 				return nil, err
 			}
