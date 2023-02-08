@@ -1,23 +1,28 @@
 package cli
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
+	"os"
 
-	"github.com/drone/drone-go/plugin/converter"
+	"github.com/kanopy-platform/drone-extension-router/internal/config"
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin"
-	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/pathschanged"
 	"github.com/kanopy-platform/drone-extension-router/internal/server"
+	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
-type RootCommand struct{}
+type RootCommand struct {
+	config        *config.Config
+	ConfigFile    string `split_words:"true"`
+	ListenAddress string `split_words:"true" default:":8080"`
+	LogLevel      string `split_words:"true" default:"info"`
+	Secret        string `required:"true"`
+}
 
 func NewRootCommand() *cobra.Command {
-	root := &RootCommand{}
+	root := &RootCommand{config: config.New()}
 
 	cmd := &cobra.Command{
 		Use:               "drone-extension-router",
@@ -25,55 +30,46 @@ func NewRootCommand() *cobra.Command {
 		RunE:              root.runE,
 	}
 
-	cmd.PersistentFlags().String("log-level", "info", "Configure log level")
-	cmd.PersistentFlags().String("listen-address", ":8080", "Server listen address")
-	cmd.PersistentFlags().Bool("pathschanged-enabled", false, "Enable pathschanged conversion extension")
-
 	cmd.AddCommand(newVersionCommand())
 	return cmd
 }
 
 func (c *RootCommand) persistentPreRunE(cmd *cobra.Command, args []string) error {
-	// bind flags to viper
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	viper.SetEnvPrefix("DRONE")
-	viper.AutomaticEnv()
-
-	if err := viper.BindPFlags(cmd.Flags()); err != nil {
+	if err := envconfig.Process("drone", c); err != nil {
 		return err
 	}
 
 	// set log level
-	logLevel, err := log.ParseLevel(viper.GetString("log-level"))
+	logLevel, err := log.ParseLevel(c.LogLevel)
 	if err != nil {
 		return err
 	}
 
 	log.SetLevel(logLevel)
 
+	// read config file if specified
+	if c.ConfigFile != "" {
+		data, err := os.ReadFile(c.ConfigFile)
+		if err != nil {
+			return err
+		}
+
+		if err := yaml.Unmarshal(data, c.config); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
-	convertPlugins := []converter.Plugin{}
-	addr := viper.GetString("listen-address")
-
-	secret := viper.GetString("secret")
-	if secret == "" {
-		return fmt.Errorf("DRONE_SECRET environment variable is required")
-	}
-
-	if viper.GetBool("pathschanged-enabled") {
-		convertPlugins = append(convertPlugins, pathschanged.New())
-	}
-
-	log.Printf("Starting server on %s\n", addr)
+	log.Printf("Starting server on %s\n", c.ListenAddress)
 
 	pluginRouter := plugin.NewRouter(
-		secret,
-		plugin.WithConvertPlugins(convertPlugins...),
+		c.Secret,
+		plugin.WithConvertPlugins(c.config.EnabledConvertPlugins()...),
 		plugin.WithLogger(log.StandardLogger()),
 	)
 
-	return http.ListenAndServe(addr, server.New(pluginRouter))
+	return http.ListenAndServe(c.ListenAddress, server.New(pluginRouter))
 }
