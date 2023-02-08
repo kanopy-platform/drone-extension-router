@@ -11,7 +11,7 @@ import (
 )
 
 type Config struct {
-	Pipeline *manifest.Pipeline `json:"pipeline,omitempty"`
+	Pipeline manifest.Pipeline `json:"pipeline,omitempty"`
 }
 
 type Defaults struct {

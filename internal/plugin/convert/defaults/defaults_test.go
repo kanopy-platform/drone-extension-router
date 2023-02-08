@@ -29,7 +29,7 @@ func TestDefaults(t *testing.T) {
 		{
 			desc: "test with defaults",
 			config: defaults.Config{
-				Pipeline: &manifest.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}},
+				Pipeline: manifest.Pipeline{NodeSelector: map[string]string{"d": "d", "test": "d"}},
 			},
 			request: []manifest.Resource{
 				&manifest.Pipeline{Kind: "pipeline", NodeSelector: map[string]string{"r": "r", "test": "r"}},
@@ -40,7 +40,7 @@ func TestDefaults(t *testing.T) {
 		},
 		{
 			desc: "test default node_selector and tolerations",
-			config: defaults.Config{&manifest.Pipeline{
+			config: defaults.Config{manifest.Pipeline{
 				NodeSelector: map[string]string{"instancegroup": "drone"},
 				Tolerations: []manifest.Toleration{
 					{Key: "dedicated", Operator: "Equal", Value: "drone", Effect: "NoSchedule"},
@@ -67,7 +67,7 @@ func TestDefaults(t *testing.T) {
 		},
 		{
 			desc:   "test with multiple objects",
-			config: defaults.Config{Pipeline: &manifest.Pipeline{Type: "test", Name: "test"}},
+			config: defaults.Config{Pipeline: manifest.Pipeline{Type: "test", Name: "test"}},
 			request: []manifest.Resource{
 				&manifest.Pipeline{Kind: "pipeline", Name: "user"},
 				&manifest.Secret{Kind: "secret", Name: "user"},

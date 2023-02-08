@@ -9,21 +9,21 @@ import (
 
 type (
 	Config struct {
-		Convert Convert `json:"convert"`
+		Convert Convert `yaml:"convert"`
 	}
 
 	Convert struct {
-		Defaults     Defaults     `json:"defaults"`
-		Pathschanged Pathschanged `json:"pathschanged"`
+		Defaults     Defaults     `yaml:"defaults"`
+		Pathschanged Pathschanged `yaml:"pathschanged"`
 	}
 
 	Defaults struct {
-		Enable   bool               `json:"enable"`
-		Pipeline *manifest.Pipeline `json:"pipeline,omitempty"`
+		Enable   bool              `yaml:"enable"`
+		Pipeline manifest.Pipeline `yaml:"pipeline,omitempty"`
 	}
 
 	Pathschanged struct {
-		Enable bool `json:"enable"`
+		Enable bool `yaml:"enable"`
 	}
 )
 
