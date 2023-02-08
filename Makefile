@@ -8,7 +8,7 @@ PKG ?= ./...
 .PHONY: test
 test: ## Run tests in local environment
 	golangci-lint run --timeout=5m $(PKG)
-	go test -cover -run=$(RUN) $(PKG)
+	go test -cover -benchmem -bench=. -run=$(RUN) $(PKG)
 
 .PHONY: license-check
 license-check:
