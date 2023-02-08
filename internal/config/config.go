@@ -7,15 +7,15 @@ import (
 
 type (
 	Config struct {
-		Convert Convert `json:"convert"`
+		Convert Convert `yaml:"convert"`
 	}
 
 	Convert struct {
-		Pathschanged Pathschanged `json:"pathschanged"`
+		Pathschanged Pathschanged `yaml:"pathschanged"`
 	}
 
 	Pathschanged struct {
-		Enable bool `json:"enable"`
+		Enable bool `yaml:"enable"`
 	}
 )
 

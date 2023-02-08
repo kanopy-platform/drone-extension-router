@@ -5,7 +5,7 @@ import (
 
 	"github.com/kanopy-platform/drone-extension-router/internal/config"
 	"github.com/stretchr/testify/assert"
-	"sigs.k8s.io/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 func TestConfig(t *testing.T) {

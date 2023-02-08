@@ -11,7 +11,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"sigs.k8s.io/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 type RootCommand struct {
