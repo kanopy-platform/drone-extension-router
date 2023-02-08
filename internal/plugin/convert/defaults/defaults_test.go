@@ -112,12 +112,12 @@ name: user`,
 
 	for _, test := range tests {
 		c := defaults.Config{}
-		assert.NoError(t, yaml.Unmarshal([]byte(test.config), &c))
+		assert.NoError(t, yaml.Unmarshal([]byte(test.config), &c), test.desc)
 
 		req := &converter.Request{Config: drone.Config{Data: test.request}}
 
 		config, err := defaults.New(c).Convert(context.TODO(), req)
-		assert.NoError(t, err)
+		assert.NoError(t, err, test.desc)
 
 		assert.Equal(t, test.want, config.Data, test.desc)
 	}
