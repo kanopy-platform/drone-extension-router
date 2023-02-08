@@ -7,8 +7,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const separator = "\n---\n"
-
 // Decode parses all YAML documents in the input string, unmarshals
 // to the appropriate type, and outputs a slice of Resource objects.
 func Decode(data string) ([]Resource, error) {
