@@ -62,10 +62,6 @@ func remarshal(src, dst Resource) error {
 // Encode marshals all of the input Resource objects into
 // a single multi-document YAML string.
 func Encode(resources []Resource) (string, error) {
-	if len(resources) < 1 {
-		return "", nil
-	}
-
 	buf := bytes.NewBuffer(nil)
 	for idx, r := range resources {
 		if idx != 0 {
