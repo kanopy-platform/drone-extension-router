@@ -24,7 +24,7 @@ func TestDefaults(t *testing.T) {
 		{
 			desc:    "test without defaults",
 			request: "kind: pipeline",
-			want:    "kind: pipeline",
+			want:    "kind: pipeline\n",
 		},
 		{
 			desc: "test with defaults",
@@ -58,7 +58,8 @@ list:
 map:
     d: d
     r: r
-    test: r`,
+    test: r
+`,
 		},
 		{
 			desc: "test default node_selector and tolerations",
@@ -88,7 +89,8 @@ tolerations:
     - key: dedicated
       operator: Equal
       value: batch
-      effect: NoSchedule`,
+      effect: NoSchedule
+`,
 		},
 		{
 			desc: "test with multiple objects",
@@ -106,7 +108,8 @@ type: test
 name: user
 ---
 kind: secret
-name: user`,
+name: user
+`,
 		},
 	}
 
