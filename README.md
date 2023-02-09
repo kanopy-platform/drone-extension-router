@@ -20,6 +20,16 @@ The configuration format is as follows:
 ```
 ---
 convert:
+  defaults:
+    enable: true
+    pipeline:
+      node_selector:
+        instancegroup: drone
+      tolerations:
+      - key: dedicated
+        operator: Equal
+        value: drone
+        effect: NoSchedule
   pathschanged:
     enable: true
 ```
@@ -30,6 +40,7 @@ convert:
 
 |Plugin|Description|
 |-|-|
+|[defaults](./internal/plugin/convert/defaults/)|Takes Drone resource configuration as input and merges that with resources in the pipeline request. User provided values take precedence.|
 |[pathschanged](https://github.com/meltwater/drone-convert-pathschanged)|Include/exclude pipelines and pipeline steps based on paths changed.|
 
 ## Testing
