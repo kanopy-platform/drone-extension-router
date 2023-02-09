@@ -40,7 +40,7 @@ convert:
 
 |Plugin|Description|
 |-|-|
-|[defaults](./internal/plugin/convert/defaults/)|Takes Drone resource configuration as input and merges that with resources in the pipeline request. User provided values take precedence.|
+|[defaults](./internal/plugin/convert/defaults/)|Takes Drone resource configuration as input and merges that with resources in the pipeline request. Values provided in `converter.Request` take precedence.|
 |[pathschanged](https://github.com/meltwater/drone-convert-pathschanged)|Include/exclude pipelines and pipeline steps based on paths changed.|
 
 ## Testing
