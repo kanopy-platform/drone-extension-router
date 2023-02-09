@@ -7,8 +7,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const separator = "\n---\n"
-
 // Decode parses all YAML documents in the input string, unmarshals
 // to the appropriate type, and outputs a slice of Resource objects.
 func Decode(data string) ([]Resource, error) {
@@ -63,19 +61,11 @@ func remarshal(src, dst Resource) error {
 // a single multi-document YAML string.
 func Encode(resources []Resource) (string, error) {
 	buf := bytes.NewBuffer(nil)
-	for idx, r := range resources {
-		if idx != 0 {
-			if _, err := buf.WriteString(separator); err != nil {
-				return "", err
-			}
-		}
+	enc := yaml.NewEncoder(buf)
+	defer enc.Close()
 
-		resourceBytes, err := yaml.Marshal(r)
-		if err != nil {
-			return "", err
-		}
-
-		if _, err := buf.Write(bytes.TrimSpace(resourceBytes)); err != nil {
+	for _, r := range resources {
+		if err := enc.Encode(r); err != nil {
 			return "", err
 		}
 	}
