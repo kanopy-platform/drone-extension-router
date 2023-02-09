@@ -11,7 +11,7 @@ import (
 )
 
 type Config struct {
-	Pipeline manifest.Pipeline `json:"pipeline,omitempty"`
+	Pipeline *manifest.Pipeline `json:"pipeline,omitempty"`
 }
 
 type Defaults struct {
@@ -33,8 +33,10 @@ func (d *Defaults) Convert(ctx context.Context, req *converter.Request) (*drone.
 	for _, r := range resources {
 		switch r.(type) {
 		case *manifest.Pipeline:
-			if err := merge(d.config.Pipeline, r); err != nil {
-				return nil, err
+			if d.config.Pipeline != nil {
+				if err := merge(d.config.Pipeline, r); err != nil {
+					return nil, err
+				}
 			}
 		}
 	}
@@ -50,7 +52,7 @@ func (d *Defaults) Convert(ctx context.Context, req *converter.Request) (*drone.
 	}, nil
 }
 
-func merge(defaults interface{}, user manifest.Resource) error {
+func merge(defaults, user manifest.Resource) error {
 	defaultBytes, err := json.Marshal(defaults)
 	if err != nil {
 		return err

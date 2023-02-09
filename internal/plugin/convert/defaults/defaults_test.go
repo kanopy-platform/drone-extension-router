@@ -7,6 +7,7 @@ import (
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/converter"
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/defaults"
+	"github.com/kanopy-platform/drone-extension-router/pkg/manifest"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 )
@@ -129,5 +130,22 @@ name: user
 		assert.NoError(t, err, test.desc)
 
 		assert.Equal(t, test.want, config.Data, test.desc)
+	}
+}
+
+func BenchmarkConvertNil(b *testing.B) {
+	benchmarkConvert(b, defaults.Config{Pipeline: nil})
+}
+
+func BenchmarkConvert(b *testing.B) {
+	benchmarkConvert(b, defaults.Config{Pipeline: &manifest.Pipeline{}})
+}
+
+func benchmarkConvert(b *testing.B, conf defaults.Config) {
+	plugin := defaults.New(conf)
+	req := &converter.Request{Config: drone.Config{Data: "kind: pipeline"}}
+
+	for n := 0; n < b.N; n++ {
+		_, _ = plugin.Convert(context.TODO(), req)
 	}
 }

@@ -18,8 +18,8 @@ type (
 	}
 
 	Defaults struct {
-		Enable   bool              `yaml:"enable"`
-		Pipeline manifest.Pipeline `yaml:"pipeline,omitempty"`
+		Enable   bool               `yaml:"enable"`
+		Pipeline *manifest.Pipeline `yaml:"pipeline,omitempty"`
 	}
 
 	Pathschanged struct {
