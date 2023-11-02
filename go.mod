@@ -6,7 +6,7 @@ require (
 	github.com/99designs/httpsignatures-go v0.0.0-20170731043157-88528bf4ca7e
 	github.com/drone/drone-go v1.7.2-0.20220308165842-f9e4fe31c2af
 	github.com/evanphx/json-patch/v5 v5.6.0
-	github.com/kanopy-platform/drone-validation v0.1.3-0.20231102164225-a1c661bfa0d0
+	github.com/kanopy-platform/drone-validation v0.2.0
 	github.com/kanopy-platform/go-http-middleware v0.1.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/meltwater/drone-convert-pathschanged v1.0.0

@@ -6,7 +6,7 @@ import (
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/defaults"
 	"github.com/kanopy-platform/drone-extension-router/internal/plugin/convert/pathschanged"
 	"github.com/kanopy-platform/drone-extension-router/pkg/manifest"
-	opa "github.com/kanopy-platform/drone-validation/plugin"
+	opa "github.com/kanopy-platform/drone-validation/pkg/plugin"
 )
 
 type (
