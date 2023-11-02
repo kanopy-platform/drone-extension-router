@@ -68,6 +68,7 @@ func (c *RootCommand) runE(cmd *cobra.Command, args []string) error {
 	pluginRouter := plugin.NewRouter(
 		c.Secret,
 		plugin.WithConvertPlugins(c.config.EnabledConvertPlugins()...),
+		plugin.WithValidatePlugins(c.config.EnabledValidatePlugins()...),
 		plugin.WithLogger(log.StandardLogger()),
 	)
 
