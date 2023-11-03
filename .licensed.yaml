@@ -8,10 +8,20 @@ allowed:
   - bsd-2-clause
   - bsd-3-clause
   - isc
+ignored:
+  go:
+    - github.com/xeipuuv/gojsonpointer # apache
+    - github.com/xeipuuv/gojsonreference # apache
 reviewed:
   go:
     - github.com/buildkite/yaml # Apache-2.0
     - github.com/drone/go-scm/**/* # BSD-2-Clause-Patent
+    - github.com/gorilla/mux # BSD-3-Clause
+    - github.com/kanopy-platform/drone-validation/**/* # Blue Oak Model License
     - github.com/kanopy-platform/go-http-middleware/* # Apache-2.0
+    - github.com/rcrowley/go-metrics # BSD
     - golang.org/x/**/*  # bsd-style
     - google.golang.org/protobuf/**/* # BSD-3-Clause
+    - gopkg.in/yaml.v2 # apache
+    - sigs.k8s.io/yaml # MIT
+    - sigs.k8s.io/yaml/**/* # MIT

@@ -17,7 +17,7 @@ license-check:
 
 .PHONY: docker-license-check
 docker-license-check:
-	@docker run --entrypoint make -v $(shell pwd):/app public.ecr.aws/kanopy/licensed-go license-check
+	@docker run --workdir /app --entrypoint make -v $(shell pwd):/app public.ecr.aws/kanopy/licensed-go license-check
 
 .PHONY: docker-build-test
 docker-build-test: ## Build local development docker image with cached go modules, builds, and tests
