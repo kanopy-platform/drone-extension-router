@@ -8,4 +8,4 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 golangci-lint run --timeout=5m  && go test ./...
+RUN make test
