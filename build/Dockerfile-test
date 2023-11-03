@@ -1,8 +1,6 @@
-FROM golangci/golangci-lint:v1.51.1 as cache
+FROM golangci/golangci-lint:v1.55.2 as cache
 ENV GOLANGCI_LINT_CACHE /root/.cache/go-build
 WORKDIR $GOPATH/src/github.com/kanopy-platform/drone-extension-router
-
-RUN apk update  && apk add make
 
 # download modules and build cache
 COPY go.mod go.sum ./
