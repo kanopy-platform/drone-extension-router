@@ -1,13 +1,13 @@
-FROM golang:1.20 as build
+FROM golang:1.21 as build
 ARG VERSION="0.0.0"
 ARG GIT_COMMIT
 WORKDIR /go/src/app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -ldflags="-X 'github.com/kanopy-platform/drone-extension-router/internal/version.version=${VERSION}' -X 'github.com/kanopy-platform/drone-extension-router/internal/version.gitCommit=${GIT_COMMIT}'" -o /go/bin/app
+RUN CGO_ENABLED=0 go build -ldflags="-X 'github.com/kanopy-platform/drone-extension-router/internal/version.version=${VERSION}' -X 'github.com/kanopy-platform/drone-extension-router/internal/version.gitCommit=${GIT_COMMIT}'" -o /go/bin/app
 
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 RUN apt-get update && apt-get install --yes ca-certificates
 RUN groupadd -r app && useradd --no-log-init -r -g app app
 USER app
