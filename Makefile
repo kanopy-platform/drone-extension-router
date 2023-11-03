@@ -3,6 +3,8 @@ CMD_NAME := $(shell basename ${GO_MODULE})
 DEFAULT_APP_PORT ?= 8080
 GIT_COMMIT := $(shell git rev-parse HEAD)
 
+export CGO_ENABLED=0
+
 RUN ?= .*
 PKG ?= ./...
 .PHONY: test
