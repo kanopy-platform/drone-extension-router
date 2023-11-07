@@ -107,11 +107,11 @@ def pipeline_manifest(ctx):
                 "name": "manifest",
                 "image": "public.ecr.aws/kanopy/buildah-plugin:v0.1.1",
                 "settings": {
+                    "access_key": {"from_secret": "ecr_access_key"},
+                    "secret_key": {"from_secret": "ecr_secret_key"},
+                    "registry": {"from_secret": "ecr_registry"},
+                    "repo": ctx.repo.name,
                     "manifest": {
-                        "access_key": {"from_secret": "ecr_access_key"},
-                        "secret_key": {"from_secret": "ecr_secret_key"},
-                        "registry": {"from_secret": "ecr_registry"},
-                        "repo": ctx.repo.name,
                         "sources": [
                             version_tag(ctx, "amd64"),
                             version_tag(ctx, "arm64"),
@@ -125,11 +125,7 @@ def pipeline_manifest(ctx):
 
 
 def main(ctx):
-    pipelines = []
-
-    # only run pipelines on "main" branch
-    if ctx.build.branch == "main":
-        pipelines.append(pipeline_test(ctx))
+    pipelines = pipeline_test(ctx)
 
     # only perform image builds for "push" and "tag" events
     if ctx.build.branch == "main" and ctx.build.event in ["push", "tag"]:
