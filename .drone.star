@@ -37,6 +37,7 @@ def pipeline_test(ctx):
     return new_pipeline(
         name="test",
         arch="amd64",
+        trigger={"branch": "main"},
         volumes=[cache_volume],
         workspace={"path": "/go/src/github.com/{}".format(ctx.repo.slug)},
         steps=[
