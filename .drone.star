@@ -37,7 +37,7 @@ def pipeline_test(ctx):
     return new_pipeline(
         name="test",
         arch="amd64",
-        trigger={"branch": "main"},
+        trigger={"branch": ctx.repo.branch},
         volumes=[cache_volume],
         workspace={"path": "/go/src/github.com/{}".format(ctx.repo.slug)},
         steps=[
@@ -126,10 +126,12 @@ def pipeline_manifest(ctx):
 
 
 def main(ctx):
-    pipelines = pipeline_test(ctx)
+    pipelines = [pipeline_test(ctx)]
 
     # only perform image builds for "push" and "tag" events
-    if ctx.build.branch == "main" and ctx.build.event in ["push", "tag"]:
+    if ctx.build.event == "tag" or (
+        ctx.build.branch == ctx.repo.branch and ctx.build.event == "push"
+    ):
         pipelines.append(pipeline_build(ctx, "amd64"))
         pipelines.append(pipeline_build(ctx, "arm64"))
         pipelines.append(pipeline_manifest(ctx))
