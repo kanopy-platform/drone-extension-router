@@ -38,10 +38,11 @@ convert:
 
 ### Convert
 
-|Plugin|Description|
-|-|-|
-|[defaults](./internal/plugin/convert/defaults/)|Takes Drone resource configuration as input and merges that with resources in the pipeline request. Values provided in `converter.Request` take precedence.|
-|[pathschanged](https://github.com/meltwater/drone-convert-pathschanged)|Include/exclude pipelines and pipeline steps based on paths changed.|
+|Type|Plugin|Description|
+|-|-|-|
+|convert|[defaults](./internal/plugin/convert/defaults/)|Takes Drone resource configuration as input and merges that with resources in the pipeline request. Values provided in `converter.Request` take precedence.|
+|convert|[pathschanged](https://github.com/meltwater/drone-convert-pathschanged)|Include/exclude pipelines and pipeline steps based on paths changed.|
+|validate|[opa](https://github.com/kanopy-platform/drone-validation)|Validate drone pipeline configuration using [OPA](https://github.com/open-policy-agent/opa).|
 
 ## Testing
 
